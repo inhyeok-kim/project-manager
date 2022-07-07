@@ -6,7 +6,7 @@ import DateRangeIcon from '@mui/icons-material/DateRange';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import WatchLaterIcon from '@mui/icons-material/WatchLater';
 
-export default function Dashboard(){
+export default function ProjectDashboard(){
     return (
         <Grid container
             justifyContent={"center"}

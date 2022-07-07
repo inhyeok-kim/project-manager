@@ -154,8 +154,8 @@ const tempMenuList = [
         ]
     },
     {
-        to : '/calendar',
-        text : 'Calendar',
+        to : '/schedule',
+        text : 'Schedule',
         icon : CalendarMonthIcon
     },
     {

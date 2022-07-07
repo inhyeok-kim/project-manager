@@ -1,8 +1,9 @@
 import { Button, Divider, Grid, List, ListItem, ListItemButton, ListItemText, MenuItem, MenuList, Paper, Stack, Typography } from "@mui/material";
 import { blueGrey } from "@mui/material/colors";
 import { useState } from "react";
-import Dashboard from "./Dashboard";
-import Tasks from "./Tasks";
+import Dashboard from "./ProjectDashboard";
+import Schedule from "./ProjectSchedule";
+import Tasks from "./ProjectTasks";
 
 export default function Project(){
     const [menu,setMenu] = useState('dashboard');
@@ -13,10 +14,10 @@ export default function Project(){
         switch (menu) {
             case "dashboard":
                 return <Dashboard/>
-                break;
             case "tasks":
                 return <Tasks/>
-                break;
+            case "schedule":
+                return <Schedule/>
             default:
                 break;
         }
@@ -24,7 +25,7 @@ export default function Project(){
 
     return (
         <Grid container columnSpacing={3}>
-            <Grid item xs={12} sx={{position:'fixed',backgroundColor:'#f1f3f7'}}>
+            <Grid item xs={12} sx={{position:'fixed',paddingBottom:'1%',width:'100%', zIndex:'2',backgroundColor:'#f1f3f7'}}>
                 <Stack 
                     spacing={3} 
                     direction={'row'} >
