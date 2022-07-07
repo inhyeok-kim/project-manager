@@ -5,6 +5,7 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import ChatIcon from '@mui/icons-material/Chat';
+import AddBoxIcon from '@mui/icons-material/AddBox';
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 
 import { useLocation, useNavigate } from "react-router-dom";
@@ -76,6 +77,7 @@ export default function Aside(){
                                     </ListItemButton>
                                     { menu.children ? 
                                         menu.children.map((childMenu)=>{
+                                            const ChildIcon = childMenu.icon;
                                             const isSubActive = childMenu.to === currentSubMenu;
                                             return (
                                                 <Collapse key={childMenu.to} in={open} timeout="auto" unmountOnExit>
@@ -97,6 +99,13 @@ export default function Aside(){
                                                                     color : { color : isSubActive ? 'white' : blueGrey[500] }
                                                                 }}
                                                             />
+                                                            {ChildIcon ? 
+                                                                <ListItemIcon>
+                                                                    <ChildIcon style={{ color : isSubActive ? 'white' : blueGrey[500] }} />
+                                                                </ListItemIcon>
+                                                                :
+                                                                ''
+                                                            }
                                                         </ListItemButton>
                                                     </List>
                                                 </Collapse>
@@ -129,6 +138,11 @@ const tempMenuList = [
         text : 'Project',
         icon : AccountTreeIcon,
         children : [
+            {
+                to : '/project/regist',
+                text : 'new Project',
+                icon : AddBoxIcon
+            },
             {
                 to : '/project/something',
                 text : 'Something Project'

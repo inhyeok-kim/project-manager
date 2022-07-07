@@ -1,6 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Dashboard from "./views/root/Dashboard";
-import Project from "./views/root/Project";
+import Project from "./views/root/project/Project";
+import Regist from "./views/root/project/Regist";
 import Root from "./views/root/Root";
 
 function App() {
@@ -9,6 +10,7 @@ function App() {
       <Routes>
         <Route path="/" element={<Root />} >
           <Route path="dashboard" element={<Dashboard />} />
+          <Route path="project/regist" element={<Regist />} />
           <Route path="project" element={<Project />} >
             <Route path=":projectId" element={<Project />} />
           </Route>

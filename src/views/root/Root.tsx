@@ -1,4 +1,4 @@
-import { Grid } from "@mui/material"
+import { Breadcrumbs, Grid, Link } from "@mui/material"
 import { Outlet } from "react-router-dom"
 import Aside from "./Aside"
 import Header from "./Header"
@@ -16,7 +16,7 @@ export default function Root(){
             <Grid item xs={2} sx={{height : '90%'}}>
                 <Aside />
             </Grid>
-            <Grid item xs={10} sx={{height : '90%', paddingRight:'2%'}}>
+            <Grid item xs={10} sx={{height : '90%', paddingRight:'2%', paddingBottom : '2%', overflowY : 'auto'}}>
                 <Outlet />
             </Grid>
         </Grid>

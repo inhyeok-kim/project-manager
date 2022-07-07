@@ -22,7 +22,7 @@ export default function Header(){
                     justifyContent={"center"} 
                     alignItems={"center"}>
                     <Typography align="center" variant="h3" fontWeight={'bold'} color={blueGrey[600]} >
-                        PMS
+                        PMA
                     </Typography>
                 </Grid>
             </Grid>
