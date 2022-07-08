@@ -7,6 +7,7 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import ChatIcon from '@mui/icons-material/Chat';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
+import AssignmentIcon from '@mui/icons-material/Assignment';
 
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
@@ -166,6 +167,11 @@ const tempMenuList = [
         to : '/chat',
         text : 'Chat',
         icon : ChatIcon
+    },
+    {
+        to : '/tasks',
+        text : 'Tasks',
+        icon : AssignmentIcon
     },
 ];
 

@@ -1,11 +1,19 @@
 import { Button, Divider, Grid, List, ListItem, ListItemButton, ListItemText, MenuItem, MenuList, Paper, Stack, Typography } from "@mui/material";
 import { blueGrey } from "@mui/material/colors";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import ProjectChat from "./ProjectChat";
 import Dashboard from "./ProjectDashboard";
 import Schedule from "./ProjectSchedule";
 import Tasks from "./ProjectTasks";
 
 export default function Project(){
+    const params = useParams();
+
+    useEffect(()=>{
+        setMenu('dashboard');
+    },[params.projectId]);
+
     const [menu,setMenu] = useState('dashboard');
     function isActive(m:string){
         return m === menu
@@ -13,11 +21,13 @@ export default function Project(){
     function child(){
         switch (menu) {
             case "dashboard":
-                return <Dashboard/>
+                return <Dashboard/>;
             case "tasks":
-                return <Tasks/>
+                return <Tasks/>;
             case "schedule":
-                return <Schedule/>
+                return <Schedule/>;
+            case "chat":
+                return <ProjectChat/>;
             default:
                 break;
         }
