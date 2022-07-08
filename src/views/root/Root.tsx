@@ -1,10 +1,10 @@
 import { Breadcrumbs, Grid, Link } from "@mui/material"
-import { Outlet } from "react-router-dom"
+import { Outlet, useLocation } from "react-router-dom"
 import Aside from "./Aside"
 import Header from "./Header"
 
 export default function Root(){
-
+    
     return (
         <Grid 
             container

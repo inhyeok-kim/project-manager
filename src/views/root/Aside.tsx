@@ -9,7 +9,7 @@ import AddBoxIcon from '@mui/icons-material/AddBox';
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 
 import { useLocation, useNavigate } from "react-router-dom";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { blueGrey } from "@mui/material/colors";
 
 export default function Aside(){
@@ -31,6 +31,10 @@ export default function Aside(){
         const subIdx = location.pathname.indexOf('/',idx+1);
         return location.pathname.substring(0,subIdx > 0 ? subIdx : location.pathname.length);
     },[location.pathname]);
+
+    useEffect(()=>{
+        if(currentMenu === '/') navigate('/dashboard');
+    }, [currentMenu]);
 
     return (
         <Grid container justifyContent={'center'}>
