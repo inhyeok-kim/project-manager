@@ -1,4 +1,4 @@
-import { Avatar, Card, CardContent, CardHeader, Grid, List, ListItem, ListItemAvatar, ListItemText } from "@mui/material";
+import { Avatar, Card, CardContent, CardHeader, Grid, List, ListItem, ListItemAvatar, ListItemButton, ListItemText } from "@mui/material";
 
 export default function Chat(){
 
@@ -9,27 +9,27 @@ export default function Chat(){
                     <CardHeader title="Direct Chat" />
                     <CardContent>
                         <List sx={{ width: '100%', maxWidth: 360, bgcolor: 'background.paper' }}>
-                            <ListItem>
+                            <ListItemButton divider>
                                 <ListItemAvatar>
                                 <Avatar>
                                 </Avatar>
                                 </ListItemAvatar>
                                 <ListItemText primary="Someone Member" secondary="text text text text text text" />
-                            </ListItem>
-                            <ListItem>
+                            </ListItemButton>
+                            <ListItemButton divider>
                                 <ListItemAvatar>
                                 <Avatar>
                                 </Avatar>
                                 </ListItemAvatar>
                                 <ListItemText primary="Someone Member" secondary="text text text text text text" />
-                            </ListItem>
-                            <ListItem>
+                            </ListItemButton>
+                            <ListItemButton divider>
                                 <ListItemAvatar>
                                 <Avatar>
                                 </Avatar>
                                 </ListItemAvatar>
                                 <ListItemText primary="Someone Member" secondary="text text text text text text" />
-                            </ListItem>
+                            </ListItemButton>
                         </List>
                     </CardContent>
                 </Card>
