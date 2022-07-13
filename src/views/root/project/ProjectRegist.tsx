@@ -3,8 +3,9 @@ import { blueGrey } from "@mui/material/colors";
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { textAlign } from "@mui/system";
+import SelectMember from "../../../components/SelectMember";
 
 
 
@@ -25,6 +26,8 @@ export default function Regist(){
     const [projectName, setProjectName] = useState('');
     const [projectDescript, setProjectDescript] = useState('');
     const [projectPrivate, setProjectPrivate] = useState(false);
+    
+    const [memberId, setMemberId] = useState([]);
     
     const [personName, setPersonName] = useState<string[]>([]);
     const handleChange = (event: SelectChangeEvent<typeof personName>) => {
@@ -97,29 +100,10 @@ export default function Regist(){
                         </Grid>
                         <Grid item xs={12} sx={{marginTop : '2%'}}>
                             <Typography color={blueGrey[800]} paddingLeft={'1%'} variant="subtitle2">Proejct Members</Typography>
-                            <Select
-                                fullWidth
-                                id="demo-multiple-chip"
-                                multiple
-                                value={personName}
-                                onChange={handleChange}
-                                renderValue={(selected) => (
-                                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                                    {selected.map((value) => (
-                                        <Chip key={value} label={value} onDelete={()=>{}}/>
-                                    ))}
-                                    </Box>
-                                )}
-                                >
-                                {names.map((name) => (
-                                    <MenuItem
-                                    key={name}
-                                    value={name}
-                                    >
-                                    {name}
-                                    </MenuItem>
-                                ))}
-                                </Select>
+                            <SelectMember 
+                                value={memberId}
+                                onChange={setMemberId}
+                            />
                         </Grid>
                         {/* 하단 버튼 영역 */}
                         <Grid item xs={12} sx={{marginTop : '3%'}}> 

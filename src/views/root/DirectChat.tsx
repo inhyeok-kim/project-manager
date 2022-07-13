@@ -1,6 +1,6 @@
 import { Avatar, Card, CardContent, CardHeader, Grid, List, ListItem, ListItemAvatar, ListItemButton, ListItemText } from "@mui/material";
 
-export default function Chat(){
+export default function DirectChat(){
 
     return (
         <Grid container columnSpacing={3} sx={{height:'100%'}}>

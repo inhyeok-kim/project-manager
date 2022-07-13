@@ -17,7 +17,7 @@ export default function Aside(){
     const navigate = useNavigate();
     const location = useLocation();
     
-    const [open, setOpen] = useState(true);
+    const [open, setOpen] = useState(false);
 
     const handleClick = () => {
         setOpen(!open);
@@ -81,41 +81,44 @@ export default function Aside(){
                                         }
                                     </ListItemButton>
                                     { menu.children ? 
-                                        menu.children.map((childMenu)=>{
-                                            const ChildIcon = childMenu.icon;
-                                            const isSubActive = childMenu.to === currentSubMenu;
-                                            return (
-                                                <Collapse key={childMenu.to} in={open} timeout="auto" unmountOnExit>
-                                                    <List component="div" disablePadding>
-                                                        <ListItemButton 
-                                                            title={childMenu.text}
-                                                            onClick={()=>{
-                                                                navigate(childMenu.to);
-                                                            }} 
-                                                            sx={{ pl: 4 }}
-                                                            style={{ backgroundColor : isSubActive ? blueGrey[500] : ''}}
-                                                            >
-                                                            <ListItemText primary={childMenu.text} 
-                                                                primaryTypographyProps={{
-                                                                    fontWeight : 'bold',
-                                                                    textOverflow: 'ellipsis',
-                                                                    whiteSpace : 'nowrap',
-                                                                    overflow : 'hidden',
-                                                                    color : { color : isSubActive ? 'white' : blueGrey[500] }
-                                                                }}
-                                                            />
-                                                            {ChildIcon ? 
-                                                                <ListItemIcon>
-                                                                    <ChildIcon style={{ color : isSubActive ? 'white' : blueGrey[500] }} />
-                                                                </ListItemIcon>
-                                                                :
-                                                                ''
-                                                            }
-                                                        </ListItemButton>
-                                                    </List>
-                                                </Collapse>
-                                            )
-                                        })
+                                        (
+                                            <Collapse in={open} timeout="auto" unmountOnExit>
+                                                <List component="div" disablePadding>
+                                                    {menu.children.map((childMenu)=>{
+                                                        const ChildIcon = childMenu.icon;
+                                                        const isSubActive = childMenu.to === currentSubMenu;
+                                                        return (
+                                                            <ListItemButton 
+                                                                key={childMenu.to}
+                                                                title={childMenu.text}
+                                                                onClick={()=>{
+                                                                    navigate(childMenu.to);
+                                                                }} 
+                                                                sx={{ pl: 4 }}
+                                                                style={{ backgroundColor : isSubActive ? blueGrey[500] : ''}}
+                                                                >
+                                                                <ListItemText primary={childMenu.text} 
+                                                                    primaryTypographyProps={{
+                                                                        fontWeight : 'bold',
+                                                                        textOverflow: 'ellipsis',
+                                                                        whiteSpace : 'nowrap',
+                                                                        overflow : 'hidden',
+                                                                        color : { color : isSubActive ? 'white' : blueGrey[500] }
+                                                                    }}
+                                                                />
+                                                                {ChildIcon ? 
+                                                                    <ListItemIcon>
+                                                                        <ChildIcon style={{ color : isSubActive ? 'white' : blueGrey[500] }} />
+                                                                    </ListItemIcon>
+                                                                    :
+                                                                    ''
+                                                                }
+                                                            </ListItemButton>
+                                                        )
+                                                    })}
+                                                </List>
+                                            </Collapse>
+                                        )
                                         :
                                         ''
                                     }
@@ -165,7 +168,7 @@ const tempMenuList = [
     },
     {
         to : '/chat',
-        text : 'Chat',
+        text : 'Direct Chat',
         icon : ChatIcon
     },
     {

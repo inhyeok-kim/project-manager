@@ -1,6 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Login from "./views/root/Login";
-import Chat from "./views/root/Chat";
+import Chat from "./views/root/DirectChat";
 import Dashboard from "./views/root/Dashboard";
 import Project from "./views/root/project/Project";
 import Regist from "./views/root/project/ProjectRegist";

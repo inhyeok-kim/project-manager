@@ -1,7 +1,7 @@
 import { Button, Divider, Grid, List, ListItem, ListItemButton, ListItemText, MenuItem, MenuList, Paper, Stack, Typography } from "@mui/material";
 import { blueGrey } from "@mui/material/colors";
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { useLocation, useParams } from "react-router-dom";
 import ProjectChat from "./ProjectChat";
 import Dashboard from "./ProjectDashboard";
 import Schedule from "./ProjectSchedule";
@@ -10,14 +10,23 @@ import Tasks from "./ProjectTasks";
 export default function Project(){
     const params = useParams();
 
+    
     useEffect(()=>{
         setMenu('dashboard');
     },[params.projectId]);
-
+    
     const [menu,setMenu] = useState('dashboard');
     function isActive(m:string){
         return m === menu
     }
+
+    const refContent = useRef<HTMLDivElement>(null);
+    useEffect(()=>{
+        if(refContent.current){
+            refContent.current.parentElement!.scrollTo(0,0);
+        }
+    }, [menu]);
+
     function child(){
         switch (menu) {
             case "dashboard":
@@ -34,8 +43,8 @@ export default function Project(){
     }
 
     return (
-        <Grid container columnSpacing={3}>
-            <Grid item xs={12} sx={{position:'fixed',paddingBottom:'1%',width:'100%', zIndex:'2',backgroundColor:'#f1f3f7'}}>
+        <Grid ref={refContent} container columnSpacing={3}>
+            <Grid item xs={10} sx={{position:'fixed',paddingBottom:'1%',width:'100%', zIndex:'2',backgroundColor:'#f1f3f7'}}>
                 <Stack 
                     spacing={3} 
                     direction={'row'} >
