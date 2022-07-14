@@ -8,23 +8,29 @@ import Root from "./views/root/Root";
 import Schedule from "./views/root/Schedule";
 import Tasks from "./views/root/Tasks";
 import AuthCheckMw from "./AuthCheckMw";
+import { useState } from "react";
 
 function App() {
+  const [login,setLogin] = useState(false);
   return (
     <BrowserRouter>
-      <AuthCheckMw />
+      <AuthCheckMw login={login} onLogin={setLogin} />
       <Routes>
         <Route path="/login" element={<Login />} />
-        <Route path="/" element={<Root />} >
-          <Route path="dashboard" element={<Dashboard />} />
-          <Route path="project/regist" element={<Regist />} />
-          <Route path="project" element={<Project />} >
-            <Route path=":projectId" element={<Project />} />
-          </Route>
-          <Route path="schedule" element={<Schedule />} />
-          <Route path="chat" element={<Chat />} />
-          <Route path="tasks" element={<Tasks />} />
-        </Route>
+        { login ? 
+          (<Route path="/" element={<Root />} >
+            <Route path="dashboard" element={<Dashboard />} />
+            <Route path="project/regist" element={<Regist />} />
+            <Route path="project" element={<Project />} >
+              <Route path=":projectId" element={<Project />} />
+            </Route>
+            <Route path="schedule" element={<Schedule />} />
+            <Route path="chat" element={<Chat />} />
+            <Route path="tasks" element={<Tasks />} />
+          </Route>)
+          :
+          ''
+        }
         <Route
           path="*"
           element={

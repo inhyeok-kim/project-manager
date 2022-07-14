@@ -1,12 +1,18 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom"
 
-export default function AuthCheckMw(){
+interface propType {
+    login : boolean
+    onLogin : Function
+}
+export default function AuthCheckMw({
+    login,onLogin
+}:propType){
     const navigate = useNavigate();
-    const [login, setLogin] = useState(false);
 
     useEffect(()=>{
         if(!login){
+            onLogin(true);
             navigate('/login');
         }
     },[]);
