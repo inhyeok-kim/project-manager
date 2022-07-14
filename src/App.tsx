@@ -7,10 +7,12 @@ import Regist from "./views/root/project/ProjectRegist";
 import Root from "./views/root/Root";
 import Schedule from "./views/root/Schedule";
 import Tasks from "./views/root/Tasks";
+import AuthCheckMw from "./AuthCheckMw";
 
 function App() {
   return (
     <BrowserRouter>
+      <AuthCheckMw />
       <Routes>
         <Route path="/login" element={<Login />} />
         <Route path="/" element={<Root />} >
