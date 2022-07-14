@@ -6,10 +6,12 @@ import ClearIcon from '@mui/icons-material/Clear';
 interface propType {
     value : any
     onChange : Function
+    multiple? : boolean
+    deletable? : boolean
 }
 
 export default function SelectMember({
-    value=[], onChange=()=>{}
+    value=[], onChange=()=>{}, multiple=true, deletable=true
 }:propType){
 
     const [memberList, setMemeberList] = useState<string[]>(value);
@@ -34,12 +36,17 @@ export default function SelectMember({
     }  
 
     function choiceMember(id:string){
-        if(memberList.includes(id)){
-            const newList = [...memberList];
-            newList.splice(memberList.indexOf(id),1);
-            setMemeberList(newList);
+        if(multiple){
+            if(memberList.includes(id)){
+                const newList = [...memberList];
+                newList.splice(memberList.indexOf(id),1);
+                setMemeberList(newList);
+            } else {
+                setMemeberList([...memberList,id]);
+            }
         } else {
-            setMemeberList([...memberList,id]);
+            setMemeberList([id]);
+            closeDialog();
         }
     }
 
@@ -64,9 +71,15 @@ export default function SelectMember({
                 {memberList.map((id) => {
                     const member = members.find(member=>id===member.id);
                     if(member){
-                        return (
-                            <Chip key={member.id} label={member.name} onDelete={()=>{unSelect(member.id)}}/>
-                        )
+                        if(deletable){
+                            return (
+                                <Chip key={member.id} label={member.name} onDelete={()=>{unSelect(member.id)}}/>
+                                )
+                        } else {
+                                return (
+                                <Chip key={member.id} label={member.name}/>
+                            )
+                        }
                     }
                 })}
             </Box>
