@@ -1,7 +1,9 @@
-import { Button, Card, CardContent, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField } from "@mui/material";
+import { Box, Button, Card, CardContent, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, Paper, Tab, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tabs, TextField } from "@mui/material";
 import { useState } from "react";
+import Gantt from "../../components/Gantt";
 import ModalTaskRegistForm from "../../components/ModalTaskRegistForm";
 import SelectMember from "../../components/SelectMember";
+import TaskGantt from "../../components/TaskGantt";
 import TaskTable from "../../components/TaskTable";
 
 export default function Tasks(){
@@ -13,14 +15,22 @@ export default function Tasks(){
         setRegistIsOpen(false);
     }
 
+    const [tabIdx,setTabId] = useState(0);
+    const handleChange = (event: React.SyntheticEvent, newValue: number) => {
+        setTabId(newValue);
+    };
+
     return (
         <Grid container>
             <Card sx={{width : '100%'}}>
-                <Grid container justifyContent={"center"} marginTop={"20px"}>
+                <Grid container justifyContent={"center"} marginTop={"20px"} sx={{ borderBottom: 1, borderColor: 'divider' }}>
                     <Grid xs={11}>
-                        <Grid container>
+                        <Grid container >
                             <Grid xs={6}>
-
+                                <Tabs value={tabIdx} onChange={handleChange} aria-label="basic tabs example">
+                                    <Tab label="TABLE" />
+                                    <Tab label="gantt"/>
+                                </Tabs>
                             </Grid>
                             <Grid xs={6}>
                                 <Grid container justifyContent={"right"}>
@@ -31,7 +41,12 @@ export default function Tasks(){
                     </Grid>
                 </Grid>
                 <CardContent>
-                    <TaskTable type={'person'} />
+                    {
+                        tabIdx === 0 ?
+                        <TaskTable type={'person'} />
+                        :
+                        <TaskGantt />
+                    }
                 </CardContent>
             </Card>
 
