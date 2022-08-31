@@ -82,6 +82,12 @@ function searchData(start : string,end:string){
 
 const datas : GanttData[] = [
     {
+        start : '2022-08-01',
+        end : '2022-08-01',
+        title : 'this is a title',
+        assign : 'Who Someone'
+    },
+    {
         start : '2022-08-02',
         end : '2022-08-03',
         title : 'this is a title',

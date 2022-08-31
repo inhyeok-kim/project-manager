@@ -123,7 +123,7 @@ export default function TaskTable({
                                 onChange={(e)=>{setSearchCondition(e.target.value)}}
                             >
                                 <MenuItem value=''>None</MenuItem>
-                                <MenuItem value={1}>Task</MenuItem>
+                                <MenuItem value={1}>Title</MenuItem>
                                 <MenuItem value={2}>Assignment</MenuItem>
                                 <MenuItem value={3}>requester</MenuItem>
                             </Select>
@@ -154,7 +154,7 @@ export default function TaskTable({
                                 ''
                             }
                             <TableCell>
-                                Task
+                                Title
                                 {/* <IconButton size="small">
                                     <HeightIcon fontSize="small" />
                                 </IconButton> */}

@@ -53,8 +53,8 @@ export default function Gantt({
     
             return (
                 <>
-                    <text fontSize={'0.8rem'} x={x} y={y}>{time}</text>
-                    <path d={d} stroke="black"></path>
+                    <text key={i+'text'} fontSize={'0.8rem'} x={x} y={y}>{time}</text>
+                    <path key={i+'path'} d={d} stroke="black"></path>
                 </>
             )
         });
@@ -69,13 +69,13 @@ export default function Gantt({
             const width = 100*(1+dateCnt);
             const height = 20;
             const color = "#"+ Math.floor(Math.random() * 16777215).toString(16);
-            return <rect x={x} y={y} width={width} height={height} fill={color} style={{cursor:'pointer'}}></rect>
+            return <rect key={i} x={x} y={y} width={width} height={height} fill={color} style={{cursor:'pointer'}}></rect>
         });
     }
 
     return (
         <div style={{display:'flex',justifyContent:'center'}}>
-            <div style={{width:'1500px',overflow:'auto',marginTop:'50px'}}>
+            <div style={{width:'1500px',overflow:'auto',marginTop:'30px'}}>
                 <svg width={svgWidth} height={svgHeight} onMouseMove={mouseMove} onMouseLeave={mouseLeave} onMouseEnter={mouseEnter}>
                     <line ref={cursorLine} x1="0" y1="20" x2="0" y2={svgHeight-30} stroke="grey"></line>
                     {renderTimeLine(true)}

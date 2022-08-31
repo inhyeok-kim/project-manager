@@ -50,9 +50,9 @@ export default function Project(){
                     direction={'row'} >
                     <Typography color={blueGrey[600]} fontWeight={600} variant="h5">Something Project</Typography>
                     {
-                        tempProjectMenu.map((m)=>{
+                        tempProjectMenu.map((m,i)=>{
                             return (
-                                <Button 
+                                <Button key={i}
                                     variant={isActive(m.text)? "outlined" : 'text'}
                                     onClick={()=>{setMenu(m.text)}}
                                 >

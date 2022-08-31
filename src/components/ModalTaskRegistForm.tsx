@@ -23,7 +23,7 @@ export default function ModalTaskRegistForm({
                 <DialogTitle>New Task</DialogTitle>
                 <DialogContent >
                     <Grid item xs={12} sx={{marginTop : '2%'}}>
-                        <Typography color={blueGrey[800]} paddingLeft={'1%'} variant="subtitle2">Task Name</Typography>
+                        <Typography color={blueGrey[800]} paddingLeft={'1%'} variant="subtitle2">Task Title</Typography>
                         <TextField
                             autoFocus
                             margin="dense"

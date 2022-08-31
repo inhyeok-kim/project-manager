@@ -101,6 +101,7 @@ export default function Login(){
                     <DialogContentText id="alert-dialog-slide-description">
                         The manager will approve the subscription after confirmation.
                         <TextField margin="normal" fullWidth label="your name" />
+                        <TextField margin="normal" fullWidth label="your department" />
                         <TextField margin="normal" type={"email"} fullWidth label="your email" />
                     </DialogContentText>
                 </DialogContent>

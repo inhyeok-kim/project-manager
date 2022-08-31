@@ -1,26 +1,51 @@
-import FullCalendar, { EventContentArg } from "@fullcalendar/react";
+import FullCalendar, { DateSelectArg, EventContentArg } from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, TextField, Typography } from "@mui/material";
+import { useEffect, useRef, useState } from "react";
+import { blueGrey } from "@mui/material/colors";
 
 export default function Calendar(){
+    const [selectDateRange, setSelectDateRange] = useState<Array<Date>|null>();
+    const [mouseLoc, setMouseLoc] = useState<Array<number>>();
+    function fnSelectDate(arg : DateSelectArg){
+        const mouseX = arg.jsEvent?.clientX;
+        const mouseY = arg.jsEvent?.clientY;
+        const newDateRange = [arg.start, arg.end];
+        setSelectDateRange(newDateRange);
+        setMouseLoc([mouseX!,mouseY!]);
+    }
 
     return (
-        <FullCalendar
-            plugins={[dayGridPlugin, interactionPlugin]}
-            dateClick={(arg)=>{console.log(arg)}}
-            initialView="dayGridMonth"
-            headerToolbar ={{
-                center: 'dayGridMonth,dayGridWeek',
-            }}
-            selectable={true}
-            editable={true}
-            select={(arg)=>{console.log(arg)}}
-            // eventContent={eventContent}
-            events={[
-                {title : 'event 1', date : '2022-07-01T15:30:00'}
-            ]}
-            eventMouseEnter={mouseEnter}
-        />
+        <>
+            <FullCalendar
+                plugins={[dayGridPlugin, interactionPlugin]}
+                // dateClick={(arg)=>{console.log(arg)}}
+                initialView="dayGridMonth"
+                headerToolbar ={{
+                    center: 'dayGridMonth,dayGridWeek',
+                }}
+                unselectCancel = {'.unselectCancel'}
+                selectable={true}
+                editable={true}
+                select={(arg)=>{fnSelectDate(arg)}}
+                unselect={()=>{setSelectDateRange(null)}}
+                // eventContent={eventContent}
+                events={[
+                    {title : 'task 1', start : '2022-08-01T15:30:00',end : '2022-08-01T18:30:00', editable : true,backgroundColor:'orange',borderColor:'orange'},
+                    {title : 'event 1', start : '2022-08-01T15:30:00',end : '2022-08-01T18:30:00', editable : true},
+                    {title : 'task 2', start : '2022-08-09T15:30:00',end : '2022-08-11T18:30:00', editable : true,backgroundColor:'orange',borderColor:'orange'},
+                    {title : 'event 2', start : '2022-08-07T15:30:00',end : '2022-08-10T18:30:00', editable : true},
+                ]}
+                eventMouseEnter={mouseEnter}
+            />
+            {
+                selectDateRange ? 
+                    <CalTooltip mouseLoc={mouseLoc!} dateRange={selectDateRange} />
+                :
+                    ''
+            }
+        </>
     )
 }
 
@@ -36,4 +61,91 @@ function eventContent(eventInfo : any){
 
 function mouseEnter(mouseEnterInfo : any){
     console.log(mouseEnterInfo.el)
+}
+
+interface CalTooltipProp {
+    mouseLoc : Array<number>,
+    dateRange : Array<Date> |null
+}
+function CalTooltip({
+    mouseLoc,
+    dateRange
+}:CalTooltipProp){
+    
+    const [registIsOpen, setRegistIsOpen] = useState(false);
+    function registOpen(){
+        setRegistIsOpen(true);
+    }
+    function registClose(){
+        setRegistIsOpen(false);
+    }
+    function fnRegistForm(e:React.MouseEvent){
+        registOpen();
+    }
+
+
+    return (
+        <>
+            <Grid className="unselectCancel" sx={{position:'fixed', top : mouseLoc[1], left: mouseLoc[0], zIndex:'1',background:'white',borderRadius:'4px'}}>
+                <Button onClick={fnRegistForm} variant="outlined" >New</Button>
+            </Grid>
+            <ModalRegistForm isOpen={registIsOpen} onClose={registClose} />
+        </>
+    )
+}
+
+interface ModalRegistFormPropType {
+    isOpen : boolean
+    onClose : Function
+}
+function ModalRegistForm({
+    isOpen, onClose
+}:ModalRegistFormPropType){
+
+    function registClose(){
+        onClose();
+    }
+    
+    const [memberId, setMemberId] = useState(['member01']);
+
+    return (
+
+            <Dialog className="unselectCancel" open={isOpen} onClose={registClose} fullWidth>
+                <DialogTitle>New Schedule</DialogTitle>
+                <DialogContent >
+                    <Grid item xs={12} sx={{marginTop : '2%'}}>
+                        <Typography color={blueGrey[800]} paddingLeft={'1%'} variant="subtitle2">Schedule Title</Typography>
+                        <TextField
+                            autoFocus
+                            margin="dense"
+                            id="name"
+                            type="text"
+                            fullWidth
+                            variant="outlined"
+                        />
+                    </Grid>
+                    <Grid item xs={12} sx={{marginTop : '2%'}}>
+                        <Typography color={blueGrey[800]} paddingLeft={'1%'} variant="subtitle2">Schedule Description</Typography>
+                        <TextField multiline minRows={3} margin="dense" fullWidth variant="outlined" />
+                    </Grid>
+                    <Grid container columnSpacing={3} sx={{marginTop : '2%'}}>
+                        <Grid item xs={6}>
+                            <Typography color={blueGrey[800]} paddingLeft={'1%'} variant="subtitle2">Start Date</Typography>
+                            <TextField fullWidth type={"date"} />
+                            <TextField fullWidth type={"time"} />
+                        </Grid>
+                        <Grid item xs={6}>
+                            <Typography color={blueGrey[800]} paddingLeft={'1%'} variant="subtitle2">End Date</Typography>
+                            <TextField fullWidth type={"date"} />
+                            <TextField fullWidth type={"time"} />
+                        </Grid>
+                    </Grid>
+
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={registClose}>Cancel</Button>
+                    <Button onClick={registClose}>Save</Button>
+                </DialogActions>
+            </Dialog>
+    )
 }
