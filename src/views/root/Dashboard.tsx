@@ -5,6 +5,8 @@ import TodayIcon from '@mui/icons-material/Today';
 import DateRangeIcon from '@mui/icons-material/DateRange';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import WatchLaterIcon from '@mui/icons-material/WatchLater';
+import TaskList from "../../components/TaskList";
+import PeriodTaskChart from "../../components/PeriodTaskChart";
 
 export default function Dashboard(){
     return (
@@ -111,17 +113,19 @@ export default function Dashboard(){
                         >
                             <Grid item xs={6}>
                                 <Grid container rowSpacing={0} sx={{height:'100%'}}>
-                                    <Grid item xs={12}>
-                                        <Card sx={{width : '100%',height:'90%'}}>
-                                            <CardContent>
-                                                업무 목록
+                                    <Grid item xs={12} sx={{height:'50%'}}>
+                                        <Card sx={{width : '100%',height:'90%', overflow:'auto'}}>
+                                            <Typography bgcolor={blueGrey[500]} position={'sticky'} top={'0px'} padding={'5px 10px 5px 10px'} fontWeight={600} color={"white"}>Upcoming Task</Typography>
+                                            <CardContent  sx={{height:'80%'}}>
+                                                <TaskList type="person" />
                                             </CardContent>
                                         </Card>
                                     </Grid>
-                                    <Grid item xs={12}>
+                                    <Grid item xs={12} sx={{height:'50%'}}>
                                         <Card sx={{width : '100%',height:'100%'}}>
-                                            <CardContent>
-                                                기간별 업무량 차트
+                                            <Typography bgcolor={blueGrey[500]} position={'sticky'} top={'0px'} padding={'5px 10px 5px 10px'} fontWeight={600} color={"white"}>Upcoming Task</Typography>
+                                            <CardContent  sx={{height:'80%',overflow:'auto'}}>
+                                                {/* <PeriodTaskChart/> */}
                                             </CardContent>
                                         </Card>
                                     </Grid>
