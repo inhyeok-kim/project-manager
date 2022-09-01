@@ -1,14 +1,23 @@
 import { Grid } from "@mui/material";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 export default function PeriodTaskChart(){
+    const wrapRef = useRef<any>();
+    const [height,setHeight] = useState();
+    // useEffect(()=>{
+    //     if(wrapRef.current){
+    //         console.log(wrapRef.current.offsetHeight);
+    //         setHeight(wrapRef.current.offsetHeight);
+    //     }
+    // },[]);
+
     return (
-        <Grid  sx={{height:'100%'}} item>
-            <ResponsiveContainer height={'100%'}>
+        <Grid ref={wrapRef} item xs={12}>
+            {/* {height? */}
                 <BarChart
-                    // width={500}
-                    // height={50}
+                    width={300}
+                    height={200}
                     data={data}
                     margin={{
                     top: 20,
@@ -25,7 +34,10 @@ export default function PeriodTaskChart(){
                     <Bar dataKey="pv" stackId="a" fill="#8884d8" />
                     <Bar dataKey="uv" stackId="a" fill="#82ca9d" />
                 </BarChart>
-            </ResponsiveContainer>
+                {/* :
+                ''
+            } */}
+            {/* <div style={{height:'222px'}}></div> */}
         </Grid>
     )
 }

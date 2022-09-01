@@ -7,8 +7,28 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import WatchLaterIcon from '@mui/icons-material/WatchLater';
 import TaskList from "../../components/TaskList";
 import PeriodTaskChart from "../../components/PeriodTaskChart";
+import { useEffect, useRef, useState } from "react";
 
 export default function Dashboard(){
+
+    const row2Ref = useRef<any>();
+    const [row2Height, setRow2Height] = useState();
+    useEffect(()=>{
+        if(row2Ref.current){
+            setRow2Height(row2Ref.current.offsetHeight);
+        }
+        window.addEventListener('resize',resize);
+        return ()=>{
+            window.removeEventListener('resize',resize);
+        }
+    },[]);
+    function resize(){
+        if(row2Ref.current){
+            setRow2Height(row2Ref.current.offsetHeight);
+            console.log('hi');
+        }
+    }
+
     return (
         <Grid container
             justifyContent={"center"}
@@ -112,9 +132,9 @@ export default function Dashboard(){
                             spacing={3}
                         >
                             <Grid item xs={6}>
-                                <Grid container rowSpacing={0} sx={{height:'100%'}}>
+                                <Grid container flexDirection={"row"} rowSpacing={0} sx={{height:row2Height}}>
                                     <Grid item xs={12} sx={{height:'50%'}}>
-                                        <Card sx={{width : '100%',height:'90%', overflow:'auto'}}>
+                                        <Card sx={{width : '100%',height:'95%', overflow:'auto'}}>
                                             <Typography bgcolor={blueGrey[500]} position={'sticky'} top={'0px'} padding={'5px 10px 5px 10px'} fontWeight={600} color={"white"}>Upcoming Task</Typography>
                                             <CardContent  sx={{height:'80%'}}>
                                                 <TaskList type="person" />
@@ -122,17 +142,17 @@ export default function Dashboard(){
                                         </Card>
                                     </Grid>
                                     <Grid item xs={12} sx={{height:'50%'}}>
-                                        <Card sx={{width : '100%',height:'100%'}}>
+                                        <Card sx={{width : '100%', height:'100%'}}>
                                             <Typography bgcolor={blueGrey[500]} position={'sticky'} top={'0px'} padding={'5px 10px 5px 10px'} fontWeight={600} color={"white"}>Upcoming Task</Typography>
-                                            <CardContent  sx={{height:'80%',overflow:'auto'}}>
-                                                {/* <PeriodTaskChart/> */}
+                                            <CardContent >
+                                                <PeriodTaskChart/>
                                             </CardContent>
                                         </Card>
                                     </Grid>
                                 </Grid>
                             </Grid>
                             <Grid item xs={6}>
-                                <Card sx={{width : '100%'}}>
+                                <Card sx={{width : '100%'}} ref={row2Ref}>
                                     <CardContent>
                                         <Calendar />
                                     </CardContent>

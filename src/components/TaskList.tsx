@@ -80,8 +80,8 @@ export default function TaskList({
                             </TableCell>
                             <TableCell align="right">End
                             </TableCell>
-                            <TableCell align="right">Status
-                            </TableCell>
+                            {/* <TableCell align="right">Status
+                            </TableCell> */}
                         </TableRow>
                     </TableHead>
                     <TableBody sx={{overflow:'auto'}}>
@@ -112,7 +112,7 @@ export default function TaskList({
                             }
                             <TableCell align="right">{row.start}</TableCell>
                             <TableCell align="right">{row.end}</TableCell>
-                            <TableCell align="right">{row.status}</TableCell>
+                            {/* <TableCell align="right">{row.status}</TableCell> */}
                         </TableRow>
                     ))}
                     </TableBody>
