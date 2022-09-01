@@ -34,7 +34,7 @@ export default function ProjectChat(){
                 <Card sx={{height:'75vh', minHeight : '645px'}}>
                     <CardContent sx={{height: '95%'}}>
                         <Grid container sx={{height : '100%'}}>
-                            <Grid xs={12} sx={{height : '100%'}} border={"1px solid lightgrey"} padding={'15px'}>
+                            <Grid item xs={12} sx={{height : '100%'}} border={"1px solid lightgrey"} padding={'15px'}>
                                 <Grid ref={chatArea} sx={{overflowY:'auto'}}>
                                     <ChatContent />
                                     <ChatContent />
@@ -92,7 +92,7 @@ export default function ProjectChat(){
                     <CardHeader title="Thread"/>
                     <CardContent sx={{height: '85%'}}>
                         <Grid container sx={{height : '100%'}}>
-                            <Grid xs={12} sx={{height : '100%'}} border={"1px solid lightgrey"} padding={'15px'}>
+                            <Grid item xs={12} sx={{height : '100%'}} border={"1px solid lightgrey"} padding={'15px'}>
                                 <Grid ref={threadChatArea} sx={{overflowY:'auto'}}>
                                     <ChatContent />
                                     <ChatContent />

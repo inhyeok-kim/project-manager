@@ -43,7 +43,7 @@ export default function Regist(){
     const [date,setDate] = useState<Date | null>();
     return (
         <Grid container justifyContent={'center'}>
-            <Grid xs={8}>
+            <Grid item xs={8}>
                 <Card>
                     <CardHeader title="Create New Project"></CardHeader>
 

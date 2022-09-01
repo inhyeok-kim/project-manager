@@ -24,15 +24,15 @@ export default function Tasks(){
         <Grid container>
             <Card sx={{width : '100%'}}>
                 <Grid container justifyContent={"center"} marginTop={"20px"} sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                    <Grid xs={11}>
+                    <Grid item xs={11}>
                         <Grid container >
-                            <Grid xs={6}>
+                            <Grid item xs={6}>
                                 <Tabs value={tabIdx} onChange={handleChange} aria-label="basic tabs example">
                                     <Tab label="TABLE" />
                                     <Tab label="gantt"/>
                                 </Tabs>
                             </Grid>
-                            <Grid xs={6}>
+                            <Grid item xs={6}>
                                 <Grid container justifyContent={"right"}>
                                     <Button variant="contained" onClick={registOpen}>New</Button>
                                 </Grid>

@@ -40,18 +40,18 @@ export default function Aside(){
     return (
         <Grid container justifyContent={'center'}>
             <Grid container justifyContent={'center'}>
-                <Grid xs={10}>
+                <Grid item xs={10}>
                     <List
                         sx={{ width: '100%',}}
                     >
                     {tempMenuList ? 
-                        tempMenuList.map((menu)=>{
+                        tempMenuList.map((menu,i)=>{
                             const isActive = menu.to === currentMenu;
                             const Icon = menu.icon;
                             return (
                                 <>
                                     <ListItemButton
-                                        key={menu.to}
+                                        key={menu.to+'_'+i}
                                         onClick={
                                             menu.children ? 
                                             handleClick
@@ -84,12 +84,12 @@ export default function Aside(){
                                         (
                                             <Collapse in={open} timeout="auto" unmountOnExit>
                                                 <List component="div" disablePadding>
-                                                    {menu.children.map((childMenu)=>{
+                                                    {menu.children.map((childMenu,i)=>{
                                                         const ChildIcon = childMenu.icon;
                                                         const isSubActive = childMenu.to === currentSubMenu;
                                                         return (
                                                             <ListItemButton 
-                                                                key={childMenu.to}
+                                                                key={childMenu.to+'_c'+i}
                                                                 title={childMenu.text}
                                                                 onClick={()=>{
                                                                     navigate(childMenu.to);

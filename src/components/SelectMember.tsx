@@ -2,6 +2,7 @@ import { Avatar, Chip, Dialog, DialogTitle, Grid, IconButton, InputAdornment, Li
 import { Box } from "@mui/system";
 import { useEffect, useState } from "react";
 import ClearIcon from '@mui/icons-material/Clear';
+import CloseIcon from '@mui/icons-material/Close';
 
 interface propType {
     value : any
@@ -85,9 +86,19 @@ export default function SelectMember({
             </Box>
 
             <Dialog fullWidth onClose={closeDialog} open={open} >
-                <DialogTitle>Select Project Member</DialogTitle>
+                <DialogTitle sx={{display:'flex',justifyContent:'space-between'}}>
+                    Select Project Member
+                    <IconButton
+                        edge="start"
+                        color="inherit"
+                        onClick={closeDialog}
+                        aria-label="close"
+                        >
+                        <CloseIcon />
+                    </IconButton>
+                </DialogTitle>
                 <Grid container justifyContent={'center'} marginBottom="20px">
-                    <Grid xs={11}>
+                    <Grid item xs={11}>
                         <TextField fullWidth value={searchName}
                             label="Search Name" variant="standard"
                             onChange={(e)=>{setSearchName(e.target.value)}}

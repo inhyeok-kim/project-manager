@@ -54,7 +54,7 @@ export default function DirectChat(){
                     <CardHeader title="Someone Member"/>
                     <CardContent sx={{height: '85%'}}>
                         <Grid container sx={{height : '100%'}}>
-                            <Grid sx={{height : '100%'}} xs={12} border={"1px solid lightgrey"} padding={'15px'}>
+                            <Grid sx={{height : '100%'}} item xs={12} border={"1px solid lightgrey"} padding={'15px'}>
                                 <Grid ref={chatArea} sx={{overflowY:'auto'}}>
                                     <ChatContent />
                                     <ChatContent />

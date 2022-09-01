@@ -2,8 +2,9 @@ import FullCalendar, { DateSelectArg, EventContentArg } from "@fullcalendar/reac
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
 import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, TextField, Typography } from "@mui/material";
-import { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { blueGrey } from "@mui/material/colors";
+import { formatDateToString } from "../utils/FormatUtil";
 
 export default function Calendar(){
     const [selectDateRange, setSelectDateRange] = useState<Array<Date>|null>();
@@ -11,7 +12,9 @@ export default function Calendar(){
     function fnSelectDate(arg : DateSelectArg){
         const mouseX = arg.jsEvent?.clientX;
         const mouseY = arg.jsEvent?.clientY;
-        const newDateRange = [arg.start, arg.end];
+        const endDate = new Date(arg.end)
+        endDate.setDate(endDate.getDate()-1);
+        const newDateRange = [arg.start, endDate];
         setSelectDateRange(newDateRange);
         setMouseLoc([mouseX!,mouseY!]);
     }
@@ -89,7 +92,12 @@ function CalTooltip({
             <Grid className="unselectCancel" sx={{position:'fixed', top : mouseLoc[1], left: mouseLoc[0], zIndex:'1',background:'white',borderRadius:'4px'}}>
                 <Button onClick={fnRegistForm} variant="outlined" >New</Button>
             </Grid>
-            <ModalRegistForm isOpen={registIsOpen} onClose={registClose} />
+            {
+                registIsOpen ? 
+                    <ModalRegistForm dateRange={dateRange} isOpen={registIsOpen} onClose={registClose} />
+                :
+                    ''
+            }
         </>
     )
 }
@@ -97,16 +105,82 @@ function CalTooltip({
 interface ModalRegistFormPropType {
     isOpen : boolean
     onClose : Function
+    dateRange : Array<Date> | null
 }
 function ModalRegistForm({
-    isOpen, onClose
+    isOpen,
+    onClose,
+    dateRange
 }:ModalRegistFormPropType){
 
     function registClose(){
         onClose();
     }
+    const [title, setTitle] = useState('');
+    const [desc, setDesc] = useState('');
+
+    const [startDate, setStartDate] = useState(formatDateToString(dateRange![0],"yyyy-mm-dd",true));
+    const [endDate, setEndDate] = useState(formatDateToString(dateRange![1],"yyyy-mm-dd",true));
+
     
-    const [memberId, setMemberId] = useState(['member01']);
+    const [startTime, setStartTime] = useState(formatDateToString(dateRange![0],"HH:MM",true));
+    const [endTime, setEndTime] = useState(formatDateToString(dateRange![1],"HH:MM",true));
+    
+    function fnSetDate(type:'start'|'end', value : string){
+        switch (type) {
+            case 'start':
+                if(new Date(value +' '+ startTime) > new Date(endDate+ ' '+endTime)){
+                    setStartDate(value);
+                    setEndDate(value);
+                    setEndTime(startTime);
+                } else {
+                    setStartDate(value);
+                }
+                break;
+            case 'end':
+                if(new Date(startDate +' '+ startTime) > new Date(value+ ' '+endTime)){
+                    setStartDate(value);
+                    setEndDate(value);
+                    setStartTime(endTime);
+                } else {
+                    setEndDate(value);
+                }
+                break;
+        }
+    }
+    function fnSetTime(type:'start'|'end', value : string){
+        switch (type) {
+            case 'start':
+                if(new Date(startDate +' '+ value) > new Date(endDate+ ' '+endTime)){
+                    setStartTime(value);
+                    setEndTime(value);
+                    setEndDate(startDate);
+                } else {
+                    setStartTime(value);
+                }
+                break;
+            case 'end':
+                if(new Date(startDate +' '+ startTime) > new Date(endDate+ ' '+value)){
+                    setStartDate(startDate);
+                    setEndTime(value);
+                    setStartTime(value);
+                } else {
+                    setEndTime(value);
+                }
+                break;
+        }
+    }
+
+    function fnRegist(){
+        const _startDate = new Date(startDate +' '+ startTime);
+        const _endDate = new Date(endDate +' '+ endTime);
+        console.log({
+            start : _startDate,
+            end : _endDate,
+            title : title,
+            desc : desc
+        });
+    }
 
     return (
 
@@ -122,29 +196,33 @@ function ModalRegistForm({
                             type="text"
                             fullWidth
                             variant="outlined"
+                            value={title}
+                            onChange={(e)=>setTitle(e.target.value)}
                         />
                     </Grid>
                     <Grid item xs={12} sx={{marginTop : '2%'}}>
                         <Typography color={blueGrey[800]} paddingLeft={'1%'} variant="subtitle2">Schedule Description</Typography>
-                        <TextField multiline minRows={3} margin="dense" fullWidth variant="outlined" />
+                        <TextField multiline minRows={3} margin="dense" fullWidth variant="outlined" value={desc} onChange={(e)=>setDesc(e.target.value)}/>
                     </Grid>
                     <Grid container columnSpacing={3} sx={{marginTop : '2%'}}>
                         <Grid item xs={6}>
                             <Typography color={blueGrey[800]} paddingLeft={'1%'} variant="subtitle2">Start Date</Typography>
-                            <TextField fullWidth type={"date"} />
-                            <TextField fullWidth type={"time"} />
+                            <TextField fullWidth type={"date"} onChange={(e)=>fnSetDate('start',e.target.value)} value={startDate} />
+                            <Typography color={blueGrey[800]} marginTop={'1%'} paddingLeft={'1%'} variant="subtitle2">Start Time</Typography>
+                            <TextField fullWidth type={"time"} onChange={(e)=>fnSetTime('start',e.target.value)} value={startTime} />
                         </Grid>
                         <Grid item xs={6}>
                             <Typography color={blueGrey[800]} paddingLeft={'1%'} variant="subtitle2">End Date</Typography>
-                            <TextField fullWidth type={"date"} />
-                            <TextField fullWidth type={"time"} />
+                            <TextField fullWidth type={"date"} onChange={(e)=>fnSetDate('end',e.target.value)} value={endDate}/>
+                            <Typography color={blueGrey[800]} marginTop={'1%'} paddingLeft={'1%'} variant="subtitle2">End Time</Typography>
+                            <TextField fullWidth type={"time"} onChange={(e)=>fnSetTime('end',e.target.value)} value={endTime} />
                         </Grid>
                     </Grid>
 
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={registClose}>Cancel</Button>
-                    <Button onClick={registClose}>Save</Button>
+                    <Button onClick={fnRegist}>Save</Button>
                 </DialogActions>
             </Dialog>
     )

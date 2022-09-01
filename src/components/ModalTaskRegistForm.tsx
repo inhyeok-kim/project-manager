@@ -1,7 +1,8 @@
-import { Button, Card, CardContent, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField, Typography } from "@mui/material";
+import { Button, Card, CardContent, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField, Typography } from "@mui/material";
 import { blueGrey } from "@mui/material/colors";
 import { useState } from "react";
 import SelectMember from "./SelectMember";
+import CloseIcon from '@mui/icons-material/Close';
 
 interface propType {
     isOpen : boolean
@@ -20,7 +21,17 @@ export default function ModalTaskRegistForm({
     return (
 
             <Dialog open={isOpen} onClose={registClose} fullWidth>
-                <DialogTitle>New Task</DialogTitle>
+                <DialogTitle sx={{display:'flex',justifyContent:'space-between'}}>
+                    New Task
+                    <IconButton
+                        edge="start"
+                        color="inherit"
+                        onClick={registClose}
+                        aria-label="close"
+                        >
+                        <CloseIcon />
+                    </IconButton>
+                </DialogTitle>
                 <DialogContent >
                     <Grid item xs={12} sx={{marginTop : '2%'}}>
                         <Typography color={blueGrey[800]} paddingLeft={'1%'} variant="subtitle2">Task Title</Typography>
@@ -36,7 +47,7 @@ export default function ModalTaskRegistForm({
                     <Grid item xs={12} sx={{marginTop : '2%'}}>
                         <Typography color={blueGrey[800]} paddingLeft={'1%'} variant="subtitle2">Assignment</Typography>
                         <Grid container>
-                            <Grid xs={10}>
+                            <Grid  item xs={10}>
                                 <SelectMember deletable={false} value={memberId} onChange={setMemberId} multiple={false}  />
                             </Grid>
                             <Button variant="contained">Self</Button>

@@ -65,7 +65,7 @@ export default function Header(){
                     sx={{height:'100%'}}
                     alignItems={"center"}
                 >
-                    <Grid xs={6}>
+                    <Grid item xs={6}>
                         <Grid container justifyContent={'flex-end'} >
                             <IconButton style={{marginRight : '10px'}}
                             onClick={handleClick2}
@@ -94,7 +94,7 @@ export default function Header(){
                             </IconButton>
                         </Grid>
                     </Grid>
-                    <Grid xs={5}>
+                    <Grid item xs={5}>
                         <Grid container justifyContent={'flex-end'}>
                             <Grid style={{textAlign:"right",marginRight:'10px'}}>
                                 <Typography fontSize={'0.7rem'} color={blueGrey[900]} align="right" variant="caption">동아피엠</Typography>
