@@ -1,7 +1,7 @@
 import FullCalendar, { DateSelectArg, EventContentArg } from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, TextField, Typography } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, TextField, Typography, Select, MenuItem, InputLabel,FormControl} from "@mui/material";
 import React, { useEffect, useRef, useState } from "react";
 import { blueGrey } from "@mui/material/colors";
 import { formatDateToString } from "../utils/FormatUtil";
@@ -28,7 +28,7 @@ export default function Calendar(){
                 headerToolbar ={{
                     center: 'dayGridMonth,dayGridWeek',
                 }}
-                unselectCancel = {'.unselectCancel'}
+                unselectCancel = {'.unselectCancel, #menu-'}
                 selectable={true}
                 editable={true}
                 select={(arg)=>{fnSelectDate(arg)}}
@@ -199,6 +199,25 @@ function ModalRegistForm({
                             value={title}
                             onChange={(e)=>setTitle(e.target.value)}
                         />
+                    </Grid>
+                    <Grid item xs={12} sx={{marginTop : '2%'}}>
+                        <Typography color={blueGrey[800]} paddingLeft={'1%'} variant="subtitle2">Project</Typography>
+                        <FormControl >
+                            {/* <InputLabel id="demo-simple-select-label">Age</InputLabel> */}
+                            <Select
+                                labelId="demo-simple-select-label"
+                                id="demo-simple-select"
+                                className="unselectCancel"
+                                value={'1'}
+                                sx={{minWidth:'120px'}}
+                                // onChange={handleChange}
+                                >
+                                <MenuItem value='1'>Select Project</MenuItem>
+                                <MenuItem className="unselectCancel" value={10}>Ten</MenuItem>
+                                <MenuItem className="unselectCancel" value={20}>Twenty</MenuItem>
+                                <MenuItem className="unselectCancel" value={30}>Thirty</MenuItem>
+                            </Select>
+                        </FormControl>
                     </Grid>
                     <Grid item xs={12} sx={{marginTop : '2%'}}>
                         <Typography color={blueGrey[800]} paddingLeft={'1%'} variant="subtitle2">Schedule Description</Typography>

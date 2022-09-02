@@ -5,23 +5,27 @@ import TodayIcon from '@mui/icons-material/Today';
 import DateRangeIcon from '@mui/icons-material/DateRange';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import WatchLaterIcon from '@mui/icons-material/WatchLater';
+import PeriodTaskChart from "../../../components/PeriodTaskChart";
+import TaskList from "../../../components/TaskList";
 
 export default function ProjectDashboard(){
     return (
         <Grid container
+            height="80%"
             justifyContent={"center"}
             >
-            <Grid item xs={12}>
-                <Grid container rowSpacing={3}>
-                    <Grid item xs={12}>
+            <Grid height="100%" item xs={12}>
+                <Grid height="100%" container>
+                    <Grid item xs={12} height="13%">
                         <Grid 
                             container
-                            spacing={3}
+                            height="100%"
+                            columnSpacing={3}
                         >
-                            <Grid item xs={3}>
-                                <Card sx={{width : '100%'}}>
-                                    <CardContent>
-                                        <Grid container>
+                            <Grid  height="100%" item xs={3}>
+                                <Card sx={{width : '100%',height:'100%'}}>
+                                    <CardContent sx={{height:'100%'}}>
+                                        <Grid container sx={{height:'70%'}}>
                                             <Grid item xs={9}>
                                                 <Typography fontWeight={600} color={blueGrey[500]}>Today's Works</Typography>
                                                 <Grid container alignItems={"flex-end"}>
@@ -39,10 +43,10 @@ export default function ProjectDashboard(){
                                     </CardContent>
                                 </Card>
                             </Grid>
-                            <Grid item xs={3}>
-                                <Card sx={{width : '100%'}}>
-                                    <CardContent>
-                                        <Grid container>
+                            <Grid height="100%" item xs={3}>
+                                <Card sx={{width : '100%',height:'100%'}}>
+                                    <CardContent sx={{height:'100%'}}>
+                                        <Grid container sx={{height:'70%'}}>
                                             <Grid item xs={9}>
                                                 <Typography fontWeight={600} color={blueGrey[500]}>Week's Works</Typography>
                                                 <Grid container alignItems={"flex-end"}>
@@ -60,10 +64,10 @@ export default function ProjectDashboard(){
                                     </CardContent>
                                 </Card>
                             </Grid>
-                            <Grid item xs={3}>
-                                <Card sx={{width : '100%'}}>
-                                    <CardContent>
-                                        <Grid container>
+                            <Grid height="100%" item xs={3}>
+                                <Card sx={{width : '100%',height:'100%'}}>
+                                    <CardContent sx={{height:'100%'}}>
+                                        <Grid container sx={{height:'70%'}}>
                                             <Grid item xs={9}>
                                                 <Typography fontWeight={600} color={blueGrey[500]}>Month's Works</Typography>
                                                 <Grid container alignItems={"flex-end"}>
@@ -81,10 +85,10 @@ export default function ProjectDashboard(){
                                     </CardContent>
                                 </Card>
                             </Grid>
-                            <Grid item xs={3}>
-                                <Card sx={{width : '100%'}}>
-                                    <CardContent>
-                                        <Grid container>
+                            <Grid height="100%" item xs={3}>
+                                <Card sx={{width : '100%',height:'100%'}}>
+                                    <CardContent sx={{height:'100%'}}>
+                                        <Grid container sx={{height:'70%'}}>
                                             <Grid item xs={9}>
                                                 <Typography fontWeight={600} color={blueGrey[500]}>Delayed Works</Typography>
                                                 <Grid container alignItems={"flex-end"}>
@@ -104,32 +108,35 @@ export default function ProjectDashboard(){
                             </Grid>
                         </Grid>
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid item xs={12} height="87%" marginTop={'2%'}>
                         <Grid 
+                            height="90%"
                             container
-                            spacing={3}
+                            columnSpacing={3}
                         >
-                            <Grid item xs={6}>
-                                <Grid container rowSpacing={0} sx={{height:'100%'}}>
-                                    <Grid item xs={12}>
-                                        <Card sx={{width : '100%',height:'90%'}}>
-                                            <CardContent>
-                                                업무 목록
+                            <Grid item xs={6} height="100%">
+                                <Grid container flexDirection={"row"} rowSpacing={0} sx={{height:'100%'}}>
+                                    <Grid item xs={12} sx={{height:'50%'}}>
+                                        <Card sx={{width : '100%',height:'95%', overflow:'auto'}}>
+                                            <Typography bgcolor={blueGrey[500]} position={'sticky'} top={'0px'} padding={'5px 10px 5px 10px'} fontWeight={600} color={"white"}>Upcoming Task</Typography>
+                                            <CardContent  sx={{height:'80%'}}>
+                                                <TaskList type="person" />
                                             </CardContent>
                                         </Card>
                                     </Grid>
-                                    <Grid item xs={12}>
-                                        <Card sx={{width : '100%',height:'100%'}}>
-                                            <CardContent>
-                                                기간별 업무량 차트
+                                    <Grid item xs={12} sx={{height:'50%'}}>
+                                        <Card sx={{width : '100%', height:'100%'}}>
+                                            <Typography bgcolor={blueGrey[500]} position={'sticky'} top={'0px'} padding={'5px 10px 5px 10px'} fontWeight={600} color={"white"}>Monthly Task</Typography>
+                                            <CardContent sx={{width : '100%', height:'96%', boxSizing:'border-box'}}>
+                                                <PeriodTaskChart/>
                                             </CardContent>
                                         </Card>
                                     </Grid>
                                 </Grid>
                             </Grid>
-                            <Grid item xs={6}>
-                                <Card sx={{width : '100%'}}>
-                                    <CardContent>
+                            <Grid item xs={6} height="100%">
+                                <Card sx={{width : '100%',height:"100%"}} >
+                                    <CardContent sx={{height:"100%"}}>
                                         <Calendar />
                                     </CardContent>
                                 </Card>
