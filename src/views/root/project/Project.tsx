@@ -83,10 +83,10 @@ const tempProjectMenu = [
     {
         text : 'chat',
     },
-    {
-        text : 'document',
-    },
-    {
-        text : 'file',
-    },
+    // {
+    //     text : 'document',
+    // },
+    // {
+    //     text : 'file',
+    // },
 ]

@@ -1,4 +1,4 @@
-import { Button, Card, CardContent, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Grid, IconButton, Paper, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField, Typography } from "@mui/material";
+import { Button, Card, CardContent, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, Grid, IconButton, MenuItem, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField, Typography } from "@mui/material";
 import { blueGrey } from "@mui/material/colors";
 import { useState } from "react";
 import SelectMember from "./SelectMember";
@@ -43,6 +43,25 @@ export default function ModalTaskRegistForm({
                             fullWidth
                             variant="outlined"
                         />
+                    </Grid>
+                    <Grid item xs={12} sx={{marginTop : '2%'}}>
+                        <Typography color={blueGrey[800]} paddingLeft={'1%'} variant="subtitle2">Project</Typography>
+                        <FormControl >
+                            {/* <InputLabel id="demo-simple-select-label">Age</InputLabel> */}
+                            <Select
+                                labelId="demo-simple-select-label"
+                                id="demo-simple-select"
+                                className="unselectCancel"
+                                value={'1'}
+                                sx={{minWidth:'120px'}}
+                                // onChange={handleChange}
+                                >
+                                <MenuItem value='1'>Select Project</MenuItem>
+                                <MenuItem className="unselectCancel" value={10}>Ten</MenuItem>
+                                <MenuItem className="unselectCancel" value={20}>Twenty</MenuItem>
+                                <MenuItem className="unselectCancel" value={30}>Thirty</MenuItem>
+                            </Select>
+                        </FormControl>
                     </Grid>
                     <Grid item xs={12} sx={{marginTop : '2%'}}>
                         <Typography color={blueGrey[800]} paddingLeft={'1%'} variant="subtitle2">Assignment</Typography>
