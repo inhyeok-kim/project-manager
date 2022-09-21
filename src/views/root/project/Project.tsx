@@ -1,7 +1,7 @@
-import { Button, Divider, Grid, List, ListItem, ListItemButton, ListItemText, MenuItem, MenuList, Paper, Stack, Typography } from "@mui/material";
+import { Button, Grid, Stack, Typography } from "@mui/material";
 import { blueGrey } from "@mui/material/colors";
 import { useEffect, useRef, useState } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import ProjectChat from "./ProjectChat";
 import Dashboard from "./ProjectDashboard";
 import Schedule from "./ProjectSchedule";

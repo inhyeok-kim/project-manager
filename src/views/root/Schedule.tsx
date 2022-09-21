@@ -1,4 +1,4 @@
-import { Card, CardContent, Grid, Paper } from "@mui/material";
+import { Card, CardContent, Grid } from "@mui/material";
 import Calendar from "../../components/Calendar";
 
 export default function Schedule(){

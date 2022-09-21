@@ -1,11 +1,12 @@
-import { Avatar, Chip, Dialog, DialogTitle, Grid, IconButton, InputAdornment, List, ListItem, ListItemAvatar, ListItemText, MenuItem, OutlinedInput, Select, SelectChangeEvent, TextField } from "@mui/material";
+import { Avatar, Chip, Dialog, DialogTitle, Grid, IconButton, InputAdornment, List, ListItem, ListItemAvatar, ListItemText, TextField } from "@mui/material";
 import { Box } from "@mui/system";
 import { useEffect, useState } from "react";
 import ClearIcon from '@mui/icons-material/Clear';
 import CloseIcon from '@mui/icons-material/Close';
+import { searchMemberList as search } from "../api/Member";
 
 interface propType {
-    value : any
+    value : Member[]
     onChange : Function
     multiple? : boolean
     deletable? : boolean
@@ -14,20 +15,26 @@ interface propType {
 export default function SelectMember({
     value=[], onChange=()=>{}, multiple=true, deletable=true
 }:propType){
-
-    const [memberList, setMemeberList] = useState<string[]>(value);
-
+    
     function unSelect(id:string){
-        const newList = [...memberList];
-        newList.splice(memberList.indexOf(id),1);
-        setMemeberList(newList);
+        const newList = [...value];
+        newList.splice(value.findIndex(mem=>mem.memId === id),1);
+        onChange(newList);
     }
 
-    useEffect(()=>{
-        onChange(memberList);
-    },[memberList]);
-
+    const [searchMemberList, setSearchMemberList] = useState(members);
+    const [searchName, setSearchName] = useState('');
+    
     const [open, setOpen] = useState(false);
+    useEffect( ()=>{
+        getSearchMemberList(searchName);
+    },[open,searchName]);
+
+    async function getSearchMemberList(name:string){
+        const list = await search({name:name} as Member);
+        setSearchMemberList(list as Array<Member>);
+    }
+
     function openDialog(){
         setOpen(true);
     }  
@@ -36,26 +43,21 @@ export default function SelectMember({
         setOpen(false);
     }  
 
-    function choiceMember(id:string){
+    function choiceMember(member:Member){
         if(multiple){
-            if(memberList.includes(id)){
-                const newList = [...memberList];
-                newList.splice(memberList.indexOf(id),1);
-                setMemeberList(newList);
+            if(value.find(mem=>mem.memId === member.memId)){
+                const newList = [...value];
+                newList.splice(value.findIndex(mem=>mem.memId === member.memId),1);
+                onChange(newList);
             } else {
-                setMemeberList([...memberList,id]);
+                onChange([...value,member]);
             }
         } else {
-            setMemeberList([id]);
+            onChange([member]);
             closeDialog();
         }
     }
 
-    const [searchMemberList, setSearchMemberList] = useState(members);
-    const [searchName, setSearchName] = useState('');
-    useEffect(()=>{
-        setSearchMemberList(members.filter(member=>member.name.toUpperCase().indexOf(searchName.toUpperCase())>=0));
-    },[searchName]);
 
     return (
         <>
@@ -69,16 +71,15 @@ export default function SelectMember({
 
                 onClick={openDialog}
             >
-                {memberList.map((id) => {
-                    const member = members.find(member=>id===member.id);
+                {value.map((member) => {
                     if(member){
                         if(deletable){
                             return (
-                                <Chip key={member.id} label={member.name} onDelete={()=>{unSelect(member.id)}}/>
+                                <Chip key={member.memId} label={member.name} onDelete={()=>{unSelect(member.memId!)}}/>
                                 )
                         } else {
                                 return (
-                                <Chip key={member.id} label={member.name}/>
+                                <Chip key={member.memId} label={member.name}/>
                             )
                         }
                     }
@@ -117,30 +118,36 @@ export default function SelectMember({
                     </Grid>
                 </Grid>
                 <List sx={{ pt: 0, height:'538px', overflowY:'auto'}} >
-                    {searchMemberList.map((member) => {
-                        if(memberList.includes(member.id)){
-                            return (
-                                <ListItem key={member.id} button selected={true}
-                                    onClick={()=>{choiceMember(member.id)}}
-                                >
-                                    <ListItemAvatar>
-                                        <Avatar></Avatar>
-                                    </ListItemAvatar>
-                                    <ListItemText primary={member.name} />
-                                </ListItem>
-                            )
-                        }
+                    {value.map((member) => {
+                        return (
+                            <ListItem key={member.memId} button selected={true}
+                                onClick={()=>{choiceMember(member)}}
+                            >
+                                <ListItemAvatar>
+                                    <Avatar></Avatar>
+                                </ListItemAvatar>
+                                <ListItemText primary={member.name} />
+                                <ListItemText primary={'/'} />
+                                <ListItemText primary={member.job} />
+                                <ListItemText primary={'/'} />
+                                <ListItemText primary={member.belong} />
+                            </ListItem>
+                        )
                     })}
                     {searchMemberList.map((member) => {
-                        if(!memberList.includes(member.id)){
+                        if(!value.find(mem=>member.memId === mem.memId)){
                             return (
-                                <ListItem key={member.id} button
-                                    onClick={()=>{choiceMember(member.id)}}
+                                <ListItem key={member.memId} button
+                                onClick={()=>{choiceMember(member)}}
                                 >
                                     <ListItemAvatar>
                                         <Avatar></Avatar>
                                     </ListItemAvatar>
                                     <ListItemText primary={member.name} />
+                                    <ListItemText primary={'/'} />
+                                    <ListItemText primary={member.job} />
+                                    <ListItemText primary={'/'} />
+                                    <ListItemText primary={member.belong} />
                                 </ListItem>
                             )
                         }
@@ -153,43 +160,43 @@ export default function SelectMember({
 
 const members : Array<Member> = [
     {
-        id : 'member01',
+        memId : 'member01',
         name : 'Oliver Hansen',
     },
     {
-        id : 'member02'  ,
+        memId : 'member02'  ,
         name : 'Van Henry',
     },
     {
-        id : 'member03' , 
+        memId : 'member03' , 
         name : 'April Tucker',
     },
     {
-        id : 'member04'  ,
+        memId : 'member04'  ,
         name : 'Ralph Hubbard',
     },
     {
-        id : 'member05',  
+        memId : 'member05',  
         name : 'Omar Alexander',
     },
     {
-        id : 'member06'  ,
+        memId : 'member06'  ,
         name : 'Carlos Abbott',
     },
     {
-        id : 'member07'  ,
+        memId : 'member07'  ,
         name : 'Miriam Wagner',
     },
     {
-        id : 'member08'  ,
+        memId : 'member08'  ,
         name : 'Bradley Wilkerson',
     },
     {
-        id : 'member09'  ,
+        memId : 'member09'  ,
         name : 'Virginia Andrews',
     },
     {
-        id : 'member10'  ,
+        memId : 'member10'  ,
         name : 'Kelly Snyder',
     },
 ];

@@ -3,6 +3,7 @@ import { blueGrey } from "@mui/material/colors";
 import { TransitionProps } from "@mui/material/transitions";
 import { forwardRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { login } from "../../api/Auth";
 
 const Transition = forwardRef(function Transition(
     props: TransitionProps & {
@@ -15,6 +16,30 @@ const Transition = forwardRef(function Transition(
 
 export default function Login(){
     const navigate = useNavigate();
+
+    const [id,setId] = useState('');
+    const [pwd, setPwd] = useState('');
+    async function fnLogin(){
+        if(!id.trim()){
+            alert('need type username');
+            return false;
+        }
+        if(!pwd.trim()){
+            alert('need type password');
+            return false;
+        }
+        
+        if(await login(id,pwd)){
+            navigate('/dashboard');
+        } else {
+            alert('로그인 실패');
+        }
+    }
+    function fnEnter(e:React.KeyboardEvent){
+        if(e.key === 'Enter'){
+            fnLogin();
+        }
+    }
 
     const [remeber,setRemeber] = useState(false);
 
@@ -59,8 +84,8 @@ export default function Login(){
                         <Grid container justifyContent={"center"}>
                             <Grid item xs={6}>
                                 <Typography align="center" variant="h5">Login</Typography>
-                                <TextField margin="normal" fullWidth label="username" />
-                                <TextField margin="normal" type={'password'} fullWidth label="password" />
+                                <TextField margin="normal" value={id} onChange={(e)=>{setId(e.target.value)}} onKeyDown={fnEnter} fullWidth label="username" />
+                                <TextField margin="normal" value={pwd} onChange={(e)=>{setPwd(e.target.value)}} onKeyDown={fnEnter} type={'password'} fullWidth label="password" />
                                 <Grid item xs={12} sx={{marginTop : '3%'}}>
                                     <FormControlLabel
                                         label="Remember me"
@@ -78,8 +103,10 @@ export default function Login(){
                                         <Grid item xs={3}>
                                             <Stack justifyContent={"flex-end"} direction="row" spacing={2}>
                                                 <Button variant="contained"
-                                                    onClick={()=>{navigate('/dashboard')}}
-                                                >Login</Button>
+                                                    onClick={fnLogin}
+                                                >
+                                                    Login
+                                                </Button>
                                             </Stack>
                                         </Grid>
                                     </Grid>

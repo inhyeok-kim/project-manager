@@ -1,4 +1,4 @@
-import { Accordion, AccordionDetails, AccordionSummary, Button, ButtonProps, Collapse, Grid, Icon, List, ListItemButton, ListItemIcon, ListItemText, Typography } from "@mui/material";
+import { Button, ButtonProps, Collapse, Grid, List, ListItemButton, ListItemIcon, ListItemText } from "@mui/material";
 import { styled } from '@mui/material/styles';
 
 import DashboardIcon from '@mui/icons-material/Dashboard';
@@ -12,21 +12,76 @@ import AssignmentIcon from '@mui/icons-material/Assignment';
 import { useLocation, useNavigate } from "react-router-dom";
 import { useEffect, useMemo, useState } from "react";
 import { blueGrey } from "@mui/material/colors";
+import { getMyProjectList } from "../../api/Project";
+import { useQuery } from "@tanstack/react-query";
+
+function useAsideMenu(){
+    const [asideMenu, setAsideMenu] = useState<AsideMenu[]>([]);
+    
+    const { data } = useQuery(["/project/my",'/project'], getMyProjectList,{
+        refetchInterval : 10000
+    });
+
+    useEffect(()=>{
+        if(data){
+            makeAsideMenu(data.data);
+        }
+    },[data])
+
+    function makeAsideMenu(data : any){
+        const projectList = data.data;
+        const tempMenuList : AsideMenu[] = [
+            {
+                to : '/dashboard',
+                text : 'Dashboard',
+                icon : DashboardIcon
+            },
+            {
+                to : '/project',
+                text : 'Project',
+                icon : AccountTreeIcon,
+                children : [
+                    {
+                        to : '/project/regist',
+                        text : 'new Project',
+                        icon : AddBoxIcon
+                    }
+                ].concat(projectList.map((project : Project)=>({
+                    to : `/project/${project.prId}`,
+                    text : project.prName
+                })))
+            },
+            {
+                to : '/schedule',
+                text : 'Schedule',
+                icon : CalendarMonthIcon
+            },
+            {
+                to : '/chat',
+                text : 'Direct Chat',
+                icon : ChatIcon
+            },
+            {
+                to : '/tasks',
+                text : 'Tasks',
+                icon : AssignmentIcon
+            },
+        ];
+        setAsideMenu(tempMenuList);
+    }
+    return asideMenu;
+}
 
 export default function Aside(){
     const navigate = useNavigate();
     const location = useLocation();
-    
-    const [open, setOpen] = useState(false);
 
-    const handleClick = () => {
-        setOpen(!open);
-    };
-
+    const asideMenuList = useAsideMenu();
     const currentMenu = useMemo(()=>{
         const idx = location.pathname.indexOf('/',1);
         return location.pathname.substring(0,idx > 0 ? idx : location.pathname.length);
     },[location.pathname]);
+
     const currentSubMenu = useMemo(()=>{
         const idx = location.pathname.indexOf('/',1);
         const subIdx = location.pathname.indexOf('/',idx+1);
@@ -37,6 +92,28 @@ export default function Aside(){
         if(currentMenu === '/') navigate('/dashboard');
     }, [currentMenu]);
 
+    return <AsideView menuList={asideMenuList} currentMenu={currentMenu} currentSubMenu={currentSubMenu} />
+}
+
+interface viewProp {
+    menuList : AsideMenu[]
+    currentMenu : string
+    currentSubMenu : string
+}
+
+function AsideView({
+    menuList,
+    currentMenu,
+    currentSubMenu
+} : viewProp){
+
+    const navigate = useNavigate();
+    const [open, setOpen] = useState(false);
+
+    const handleClick = () => {
+        setOpen(!open);
+    };
+
     return (
         <Grid container justifyContent={'center'}>
             <Grid container justifyContent={'center'}>
@@ -44,8 +121,8 @@ export default function Aside(){
                     <List
                         sx={{ width: '100%',}}
                     >
-                    {tempMenuList ? 
-                        tempMenuList.map((menu,i)=>{
+                    {menuList ? 
+                        menuList.map((menu,i)=>{
                             const isActive = menu.to === currentMenu;
                             const Icon = menu.icon;
                             return (
@@ -134,49 +211,6 @@ export default function Aside(){
         </Grid>
     )
 }
-
-const tempMenuList = [
-    {
-        to : '/dashboard',
-        text : 'Dashboard',
-        icon : DashboardIcon
-    },
-    {
-        to : '/project',
-        text : 'Project',
-        icon : AccountTreeIcon,
-        children : [
-            {
-                to : '/project/regist',
-                text : 'new Project',
-                icon : AddBoxIcon
-            },
-            {
-                to : '/project/something',
-                text : 'Something Project'
-            },
-            {
-                to : '/project/something2',
-                text : 'Something Project2'
-            }
-        ]
-    },
-    {
-        to : '/schedule',
-        text : 'Schedule',
-        icon : CalendarMonthIcon
-    },
-    {
-        to : '/chat',
-        text : 'Direct Chat',
-        icon : ChatIcon
-    },
-    {
-        to : '/tasks',
-        text : 'Tasks',
-        icon : AssignmentIcon
-    },
-];
 
 interface ButtonStyleProp extends ButtonProps {
     isActive? : boolean

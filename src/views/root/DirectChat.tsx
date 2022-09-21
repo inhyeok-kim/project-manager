@@ -1,6 +1,5 @@
-import { Avatar, Button, Card, CardContent, CardHeader, Grid, IconButton, List, ListItem, ListItemAvatar, ListItemButton, ListItemText, TextField } from "@mui/material";
-import { borderRadius } from "@mui/system";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { Avatar, Card, CardContent, CardHeader, Grid, IconButton, List, ListItemAvatar, ListItemButton, ListItemText, TextField } from "@mui/material";
+import { useEffect, useRef, useState } from "react";
 import SendIcon from '@mui/icons-material/Send';
 import ChatContent from "../../components/ChatContent";
 

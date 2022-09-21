@@ -1,4 +1,4 @@
-import { Button, Card, CardContent, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, Grid, IconButton, MenuItem, Paper, Select, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField, Typography } from "@mui/material";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, Grid, IconButton, MenuItem, Select, TextField, Typography } from "@mui/material";
 import { blueGrey } from "@mui/material/colors";
 import { useState } from "react";
 import SelectMember from "./SelectMember";
@@ -16,7 +16,7 @@ export default function ModalTaskRegistForm({
         onClose();
     }
     
-    const [memberId, setMemberId] = useState(['member01']);
+    const [members, setMembers] = useState<Member[]>([]);
 
     return (
 
@@ -67,7 +67,7 @@ export default function ModalTaskRegistForm({
                         <Typography color={blueGrey[800]} paddingLeft={'1%'} variant="subtitle2">Assignment</Typography>
                         <Grid container>
                             <Grid  item xs={10}>
-                                <SelectMember deletable={false} value={memberId} onChange={setMemberId} multiple={false}  />
+                                <SelectMember deletable={false} value={members} onChange={setMembers} multiple={false}  />
                             </Grid>
                             <Button variant="contained">Self</Button>
                         </Grid>

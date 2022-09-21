@@ -1,10 +1,12 @@
-import { Avatar, Badge, BadgeProps, Button, Grid, IconButton, Menu, MenuItem, Popover, Typography } from "@mui/material";
+import { Avatar, Badge, Button, Grid, IconButton, Menu, MenuItem, Popover, Typography } from "@mui/material";
 import { blueGrey } from "@mui/material/colors";
 
 import SettingsIcon from '@mui/icons-material/Settings';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { logout } from "../../api/Auth";
+import { test } from "../../api/Test";
 
 export default function Header(){
     const navigate = useNavigate();
@@ -28,6 +30,11 @@ export default function Header(){
         setAnchorEl2(null);
     };
     const open2 = Boolean(anchorEl2);
+
+    function fnLogout(){
+        logout();
+        navigate('/login');
+    }
 
     return (
         <Grid 
@@ -110,9 +117,9 @@ export default function Header(){
                                 open={open}
                                 onClose={handleClose}
                             >
-                                <MenuItem onClick={handleClose}>Profile</MenuItem>
+                                <MenuItem onClick={test}>Profile</MenuItem>
                                 <MenuItem onClick={handleClose}>My account</MenuItem>
-                                <MenuItem onClick={()=>{navigate('/login')}}>Logout</MenuItem>
+                                <MenuItem onClick={fnLogout}>Logout</MenuItem>
                             </Menu>
                         </Grid>
                     </Grid>

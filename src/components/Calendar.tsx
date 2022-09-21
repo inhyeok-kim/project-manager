@@ -1,8 +1,8 @@
-import FullCalendar, { DateSelectArg, EventContentArg } from "@fullcalendar/react";
+import FullCalendar, { DateSelectArg } from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
 import interactionPlugin from "@fullcalendar/interaction";
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, TextField, Typography, Select, MenuItem, InputLabel,FormControl} from "@mui/material";
-import React, { useEffect, useRef, useState } from "react";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, TextField, Typography, Select, MenuItem,FormControl} from "@mui/material";
+import React, { useState } from "react";
 import { blueGrey } from "@mui/material/colors";
 import { formatDateToString } from "../utils/FormatUtil";
 

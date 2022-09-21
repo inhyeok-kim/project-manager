@@ -10,37 +10,39 @@ import Tasks from "./views/root/Tasks";
 import AuthCheckMw from "./AuthCheckMw";
 import { useState } from "react";
 
+
 function App() {
   const [login,setLogin] = useState(false);
+
   return (
-    <BrowserRouter>
-      <AuthCheckMw login={login} onLogin={setLogin} />
-      <Routes>
-        <Route path="/login" element={<Login />} />
-        { login ? 
-          (<Route path="/" element={<Root />} >
-            <Route path="dashboard" element={<Dashboard />} />
-            <Route path="project/regist" element={<Regist />} />
-            <Route path="project" element={<Project />} >
-              <Route path=":projectId" element={<Project />} />
-            </Route>
-            <Route path="schedule" element={<Schedule />} />
-            <Route path="chat" element={<Chat />} />
-            <Route path="tasks" element={<Tasks />} />
-          </Route>)
-          :
-          ''
-        }
-        <Route
-          path="*"
-          element={
-            <main style={{ padding: "1rem" }}>
-              <p>There's nothing here!</p>
-            </main>
+      <BrowserRouter>
+        <AuthCheckMw login={login} onLogin={setLogin} />
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          { login ? 
+            (<Route path="/" element={<Root />} >
+              <Route path="dashboard" element={<Dashboard />} />
+              <Route path="project/regist" element={<Regist />} />
+              <Route path="project" element={<Project />} >
+                <Route path=":projectId" element={<Project />} />
+              </Route>
+              <Route path="schedule" element={<Schedule />} />
+              <Route path="chat" element={<Chat />} />
+              <Route path="tasks" element={<Tasks />} />
+            </Route>)
+            :
+            ''
           }
-        />
-      </Routes>
-    </BrowserRouter>
+          <Route
+            path="*"
+            element={
+              <main style={{ padding: "1rem" }}>
+                <p>There's nothing here!</p>
+              </main>
+            }
+          />
+        </Routes>
+      </BrowserRouter>
   );
 }
 

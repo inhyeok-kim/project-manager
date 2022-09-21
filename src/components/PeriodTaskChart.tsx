@@ -1,6 +1,5 @@
 import { Grid } from "@mui/material";
 import { blueGrey, red } from "@mui/material/colors";
-import { useEffect, useRef, useState } from "react";
 import { Bar, BarChart, CartesianGrid, Legend, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 
 export default function PeriodTaskChart(){

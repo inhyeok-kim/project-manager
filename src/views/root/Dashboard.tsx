@@ -1,4 +1,4 @@
-import { Button, Card, CardContent, CardHeader, Divider, Grid, Icon, List, ListItem, ListItemIcon, ListItemText, Paper, Stack, Typography } from "@mui/material";
+import { Card, CardContent, Grid, Icon, Typography } from "@mui/material";
 import { blue, blueGrey, deepOrange, green, red } from "@mui/material/colors";
 import Calendar from "../../components/Calendar";
 import TodayIcon from '@mui/icons-material/Today';
@@ -7,7 +7,6 @@ import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
 import WatchLaterIcon from '@mui/icons-material/WatchLater';
 import TaskList from "../../components/TaskList";
 import PeriodTaskChart from "../../components/PeriodTaskChart";
-import { useEffect, useRef, useState } from "react";
 
 export default function Dashboard(){
 
