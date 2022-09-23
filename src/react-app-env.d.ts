@@ -1,5 +1,29 @@
 /// <reference types="react-scripts" />
 
+interface Task {
+    [index : string]
+    taskId? : string
+    taskTitle? : string
+    taskDescription? : string
+    status? : 'P' | 'S' | 'D' | 'E'
+    startDt? : string
+    requesterId? : string
+    registTime? : Date
+    progress? : number
+    prId? : string
+    importance? : number
+    endDt? : string
+    assignId? : string
+
+    prName? : string
+    requesterName? : string
+    assignName? : string
+
+    searchType? : 'or'
+    page? : number
+    perPage? : number
+}
+
 interface Project {
     [index : string]
     prId? : string
@@ -10,7 +34,7 @@ interface Project {
     endDt? : string
     register? : string
     registTime? : Date
-    status? : 'P' | 'E' | 'S' | 'D'
+    status? : 'P' | 'E' | 'S' | 'D' | ''
     members? : Member[]
     page? : number
     perPage? : number

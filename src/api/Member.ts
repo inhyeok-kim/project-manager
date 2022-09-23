@@ -12,3 +12,9 @@ export async function searchMemberList(search:Member){
     });
     return list.data.data;
 }
+
+export async function selectMyInfo(){
+    return axios.get(URL+'/member/me',{
+        withCredentials : true
+    })
+}

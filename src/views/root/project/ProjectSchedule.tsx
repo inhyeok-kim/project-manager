@@ -1,7 +1,12 @@
 import { Card, CardContent, Grid } from "@mui/material";
 import Calendar from "../../../components/Calendar";
 
-export default function ProjectSchedule(){
+interface propType {
+    prId : string
+}
+export default function ProjectSchedule({
+    prId
+}:propType){
 
     return (
         <Grid container>

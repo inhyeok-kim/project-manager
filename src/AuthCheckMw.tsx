@@ -1,5 +1,7 @@
+import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom"
+import { loginCheck } from "./api/Auth";
 
 interface propType {
     login : boolean
@@ -10,11 +12,18 @@ export default function AuthCheckMw({
 }:propType){
     const navigate = useNavigate();
 
-    useEffect(()=>{
-        if(!login){
-            onLogin(true);
-            navigate('/login');
-        }
-    },[]);
+    useQuery(['/auth'],loginCheck,{
+        onSuccess(data) {
+            if(data){
+                if(data.data.code === '0') {
+                    onLogin(true);
+                } else {
+                    onLogin(false);
+                    navigate('/login');
+                }
+            }
+        },
+    });
+
     return null
 }

@@ -27,6 +27,11 @@ export async function logout(){
     await axios.get(URL+'/auth/logout',{
         withCredentials : true
     });
+}
 
+export async function loginCheck(){
+    return await axios.get(URL+'/auth',{
+        withCredentials : true
+    });
 }
 

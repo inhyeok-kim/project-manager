@@ -3,7 +3,12 @@ import SendIcon from '@mui/icons-material/Send';
 import { useEffect, useRef, useState } from "react";
 import ChatContent from "../../../components/ChatContent";
 
-export default function ProjectChat(){
+interface propType {
+    prId : string
+}
+export default function ProjectChat({
+    prId
+}:propType){
     const chatArea = useRef<HTMLDivElement>(null);
     const textArea = useRef<HTMLDivElement>(null);
 

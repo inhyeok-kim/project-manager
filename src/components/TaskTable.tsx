@@ -1,66 +1,100 @@
 import { Button, FormControl, Grid, InputLabel, MenuItem, Select, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, TextField } from "@mui/material";
-import React, { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import React, { ChangeEvent, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { getMyTaskList, getProjectTaskList } from "../api/Task";
 import { formatDateToString } from "../utils/FormatUtil";
-
-interface TastDataType {
-    task: string,
-    assignment: string,
-    request: string,
-    start: string,
-    end: string,
-    status : string,
-}
-function createData(
-    task: string,
-    assignment: string,
-    request: string,
-    start: string,
-    end: string,
-    status : string,
-    ) {
-    return { task, assignment, request, start, end, status };
-}
-
-const rows = [
-    createData('Frozen yoghurt', 'username', 'username', '2022-07-01', '2022-07-05', 'Complete'),
-    createData('Ice cream sandwich', 'username', 'username', '2022-07-01', '2022-07-05', 'Proceeding'),
-    createData('Eclair', 'username', 'username', '2022-07-01', '2022-07-05', 'Proceeding'),
-    createData('Cupcake', 'username', 'username', '2022-07-01', '2022-07-05', 'Complete'),
-    createData('Gingerbread', 'username', 'username', '2022-07-01', '2022-07-05', 'Delayed'),
-];
+import SelectProject from "./SelectProject";
 
 interface propType {
     type : 'person' | 'project'
+    prId? : string
+    onClick : Function
 }
+
 export default function TaskTable({
-    type
+    type,
+    prId = '',
+    onClick
 }:propType){
+    
+    const [searchCondition, setSearchCondition] = useState({
+        taskTitle : '',
+        assignName : '',
+        page : 0,
+        perPage : 5,
+        prId : prId,
+        status : '' as "P" | "S" | "D" | "E" | undefined,
+        startDt : formatDateToString(new Date(), 'yyyy-mm-dd',true),
+        endDt : formatDateToString(new Date(new Date().setDate(new Date().getDate()+7)), 'yyyy-mm-dd',true),
+    });
+    const {taskList,refetch} = useTaskList(type,searchCondition);
+    useEffect(()=>{
+        refetch();
+    },[searchCondition])
 
-    const [page, setPage] = useState(0);
     function handleChangePage(e:any,newPage:number){
-        setPage(newPage);
+        const search = {...searchCondition};
+        search.page = newPage;
+        setSearchCondition(search);
     }
-    const [rowsPerPage, setRowsPerPage] = useState(3);
     function handleChangeRowsPerPage(e : any){
-        setRowsPerPage(parseInt(e.target.value));
+        const search = {...searchCondition};
+        search.perPage = parseInt(e.target.value);
+        setSearchCondition(search);
     }
 
-    const [searchProject,setSearchProject] = useState('');
-    const [searchState,setSearchState] = useState('');
-    const [searchCondition,setSearchCondition] = useState('');
-    const [searchStart,setSearchStart] = useState(formatDateToString(new Date(), 'yyyy-mm-dd',true));
-    const [searchEnd,setSearchEnd] = useState(formatDateToString(new Date(new Date().setDate(new Date().getDate()+7)), 'yyyy-mm-dd',true));
-    function searchStartHandler(e:React.FormEvent){
-        if(new Date(searchEnd) < new Date(e.target.value)){
-            setSearchEnd(e.target.value);
-        }
-        setSearchStart(e.target.value);
+    function setSearchProject(e:ChangeEvent<HTMLInputElement>){
+        const search = {...searchCondition};
+        search.prId = e.target.value;
+        search.page = 0;
+        setSearchCondition(search);
     }
-    function searchEndHandler(e:React.FormEvent){
-        if(new Date(searchStart) > new Date(e.target.value)){
-            setSearchStart(e.target.value);
+
+    function setSearchState(value:'P'|'S'|'E'|undefined){
+        const search = {...searchCondition};
+        search.status = value;
+        search.page = 0;
+        setSearchCondition(search);
+    }
+
+    
+    function searchStartHandler(e:ChangeEvent<HTMLInputElement>){
+        const search = {...searchCondition};
+        if(new Date(searchCondition.endDt) < new Date(e.target.value)){
+            search.endDt = e.target.value;
         }
-        setSearchEnd(e.target.value);
+        search.startDt = e.target.value;
+        search.page = 0;
+        setSearchCondition(search);
+    }
+    function searchEndHandler(e:ChangeEvent<HTMLInputElement>){
+        const search = {...searchCondition};
+        if(new Date(searchCondition.startDt) > new Date(e.target.value)){
+            search.startDt = e.target.value;
+        }
+        search.endDt = e.target.value;
+        search.page = 0;
+        setSearchCondition(search);
+    }
+    const [keywordType,setKeywordType] = useState('T');
+    const [keyword, setKeyword] = useState('');
+    function fnSearchKeyword(){
+        const search = {...searchCondition};
+        switch (keywordType) {
+            case "T":
+                search.taskTitle = keyword;
+                search.assignName = '';
+                search.page = 0;
+                setSearchCondition(search);
+                break;
+            case "A":
+                search.assignName = keyword;
+                search.taskTitle = '';
+                search.page = 0;
+                setSearchCondition(search);
+                break;
+        }
     }
 
     return (
@@ -68,22 +102,18 @@ export default function TaskTable({
             <Grid item xs={12}>
                 <Grid container>
                     <Grid item xs={6}>
-                        <FormControl sx={{margin:'0px 10px'}}>
-                            <InputLabel id="select_project">project</InputLabel>
-                            <Select
-                                variant="standard"
-                                sx={{minWidth:'100px'}}
-                                labelId="select_project"
-                                label="Project"
-                                value={searchProject}
-                                onChange={(e)=>{setSearchProject(e.target.value)}}
-                                >
-                                <MenuItem value=''>None</MenuItem>
-                                <MenuItem value={1}>Project1</MenuItem>
-                                <MenuItem value={2}>Project2long</MenuItem>
-                                <MenuItem value={3}>Project3</MenuItem>
-                            </Select>
-                        </FormControl>
+                        {
+                            type === "person" ? 
+                                <FormControl sx={{margin:'0px 10px'}}>
+                                    <InputLabel id="select_project">project</InputLabel>
+                                    <SelectProject value={searchCondition.prId}
+                                        onChange={setSearchProject}
+                                        variant={"standard"}
+                                    />
+                                </FormControl>
+                            :
+                            ''
+                        }
                         <FormControl sx={{margin:'0px 10px'}}>
                             <InputLabel id="select_status">status</InputLabel>
                             <Select
@@ -91,20 +121,20 @@ export default function TaskTable({
                                 sx={{minWidth:'100px'}}
                                 labelId="select_status"
                                 label="status"
-                                value={searchState}
+                                value={searchCondition.status}
                                 onChange={(e)=>{setSearchState(e.target.value)}}
                                 >
                                 <MenuItem value=''>None</MenuItem>
-                                <MenuItem value={1}>Complete</MenuItem>
-                                <MenuItem value={2}>Proceeding</MenuItem>
-                                <MenuItem value={3}>Delayed</MenuItem>
+                                <MenuItem value={'P'}>Proceeding</MenuItem>
+                                <MenuItem value={'S'}>Stopped</MenuItem>
+                                <MenuItem value={'E'}>End</MenuItem>
                             </Select>
                         </FormControl>
                         <FormControl sx={{margin:'0px 10px'}}>
-                            <TextField label=" " value={searchStart} onChange={searchStartHandler} variant="standard" type={"date"} />
+                            <TextField label=" " value={searchCondition.startDt} onChange={searchStartHandler} variant="standard" type={"date"} />
                         </FormControl>
                         <FormControl sx={{margin:'0px 10px'}}>
-                            <TextField label=" " value={searchEnd} onChange={searchEndHandler} variant="standard" type={"date"} />
+                            <TextField label=" " value={searchCondition.endDt} onChange={searchEndHandler} variant="standard" type={"date"} />
                         </FormControl>
                     </Grid>
                     <Grid item xs={6} sx={{textAlign:'right'}}>
@@ -114,19 +144,20 @@ export default function TaskTable({
                                 variant="standard"
                                 sx={{minWidth:'120px'}}
                                 labelId="select_search_condition"
-                                label="searchCondition"
-                                value={searchCondition}
-                                onChange={(e)=>{setSearchCondition(e.target.value)}}
+                                value={keywordType}
+                                onChange={(e)=>{setKeywordType(e.target.value)}}
                             >
-                                <MenuItem value=''>None</MenuItem>
-                                <MenuItem value={1}>Title</MenuItem>
-                                <MenuItem value={2}>Assignment</MenuItem>
-                                <MenuItem value={3}>requester</MenuItem>
+                                <MenuItem value={'T'}>Title</MenuItem>
+                                {type === "project" ?
+                                    <MenuItem value={'A'}>Assignment</MenuItem>
+                                    :''
+                                }
+                                {/* <MenuItem value={3}>requester</MenuItem> */}
                             </Select>
                         </FormControl>
-                        <TextField label="keyword" variant="standard" />
+                        <TextField label="search keyword" variant="standard" value={keyword} onChange={(e)=>{setKeyword(e.target.value)}} onKeyDown={(e)=>{if(e.key==='Enter')fnSearchKeyword()}}/>
                         <FormControl sx={{margin:'0px 10px',paddingTop:'10px'}}>
-                            <Button variant="contained" >
+                            <Button variant="contained" onClick={fnSearchKeyword}>
                                 Search
                             </Button>
                         </FormControl>
@@ -161,12 +192,12 @@ export default function TaskTable({
                                     <HeightIcon fontSize="small" />
                                 </IconButton> */}
                             </TableCell>
-                            <TableCell align="right">
+                            {/* <TableCell align="right">
                                 requester
-                                {/* <IconButton size="small">
+                                <IconButton size="small">
                                     <HeightIcon fontSize="small" />
-                                </IconButton> */}
-                            </TableCell>
+                                </IconButton>
+                            </TableCell> */}
                             <TableCell align="right">
                                 Start
                                 {/* <IconButton size="small">
@@ -174,6 +205,16 @@ export default function TaskTable({
                                 </IconButton> */}
                             </TableCell>
                             <TableCell align="right">End
+                                {/* <IconButton size="small">
+                                    <HeightIcon fontSize="small" />
+                                </IconButton> */}
+                            </TableCell>
+                            <TableCell align="right">Progress
+                                {/* <IconButton size="small">
+                                    <HeightIcon fontSize="small" />
+                                </IconButton> */}
+                            </TableCell>
+                            <TableCell align="right">Importance
                                 {/* <IconButton size="small">
                                     <HeightIcon fontSize="small" />
                                 </IconButton> */}
@@ -186,30 +227,42 @@ export default function TaskTable({
                         </TableRow>
                         </TableHead>
                         <TableBody>
-                        {(rowsPerPage > 0
-                            ? rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                            : rows
+                        {(searchCondition.perPage > 0
+                            ? taskList.slice(searchCondition.page * searchCondition.perPage, searchCondition.page * searchCondition.perPage + searchCondition.perPage)
+                            : taskList
                         ).map((row) => (
                             <TableRow
+                                hover
                                 key={row.task}
-                                sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
+                                sx={{ cursor:'pointer' ,'&:last-child td, &:last-child th': { border: 0 } }}
+                                onClick={()=>onClick(row.taskId)}
                             >
                                 {
                                     type === 'person' ?
                                     <TableCell>
-                                        ProjectName
+                                        {row.prName ? row.prName : 'Unselected'}
                                     </TableCell>
                                     :
                                     ''
                                 }
                                 <TableCell component="th" scope="row">
-                                    {row.task}
+                                    {row.taskTitle}
                                 </TableCell>
-                                <TableCell align="right">{row.assignment}</TableCell>
-                                <TableCell align="right">{row.request}</TableCell>
-                                <TableCell align="right">{row.start}</TableCell>
-                                <TableCell align="right">{row.end}</TableCell>
-                                <TableCell align="right">{row.status}</TableCell>
+                                <TableCell align="right">{row.assignName}</TableCell>
+                                {/* <TableCell align="right">{row.requesterName}</TableCell> */}
+                                <TableCell align="right">{row.startDt}</TableCell>
+                                <TableCell align="right">{row.endDt}</TableCell>
+                                <TableCell align="right">{row.progress}%</TableCell>
+                                <TableCell align="right">
+                                    {row.importance == 0 ? 'Minor' : 
+                                    row.importance == 1 ? 'Unimportant' : 
+                                    row.importance == 2 ? 'Important' : 
+                                    row.importance == 3 ? 'Priority' : 
+                                    row.importance == 4 ? 'Urgent' : ''}
+                                </TableCell>
+                                <TableCell align="right">
+                                    {row.status === 'P' ? 'Proceeding' : row.status === 'E' ? 'End' : row.status === 'S' ? ' Stopped' : 'Deleted'}
+                                </TableCell>
                             </TableRow>
                         ))}
                         </TableBody>
@@ -217,9 +270,9 @@ export default function TaskTable({
                     <TablePagination
                         rowsPerPageOptions={[1, 3, 5]}
                         component="div"
-                        count={rows.length}
-                        rowsPerPage={rowsPerPage}
-                        page={page}
+                        count={taskList.length}
+                        rowsPerPage={searchCondition.perPage}
+                        page={searchCondition.page}
                         onPageChange={handleChangePage}
                         onRowsPerPageChange={handleChangeRowsPerPage}
                     />
@@ -227,4 +280,19 @@ export default function TaskTable({
             </Grid>
         </Grid>
     )
+}
+
+function useTaskList(type : 'person' | 'project',search :Task){
+    const navigate = useNavigate();
+    const [taskList, setTaskList] = useState<Task[]>([]);
+    const { refetch } = useQuery([type === 'project' ? "/task/project" : "/task/my",'/task'], type === 'project' ? ()=>getProjectTaskList(search) : ()=>getMyTaskList(search),{
+        onSuccess : data =>{
+            if(data.data.code === 'A1') navigate('/login');
+            if(data){
+                setTaskList(data.data.data);
+                
+            }
+        }
+    });
+    return {taskList,refetch};
 }

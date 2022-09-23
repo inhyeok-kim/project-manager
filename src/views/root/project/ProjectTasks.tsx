@@ -1,22 +1,38 @@
 import { Button, Card, CardContent, Grid, Tab, Tabs } from "@mui/material";
 import { useState } from "react";
-import ModalTaskRegistForm from "../../../components/ModalTaskRegistForm";
+import ModalTaskForm from "../../../components/ModalTaskForm";
 import TaskGantt from "../../../components/TaskGantt";
 import TaskTable from "../../../components/TaskTable";
 
-export default function ProjectTasks(){
-    const [registIsOpen, setRegistIsOpen] = useState(false);
-    function registOpen(){
-        setRegistIsOpen(true);
+interface propType {
+    prId : string
+}
+export default function ProjectTasks({
+    prId
+}:propType){
+    const [modalMode, setModalMode] = useState<"regist" | "update">('regist');
+    const [modalIsOpen, setModalIsOpen] = useState(false);
+    function modalClose(){
+        setModalIsOpen(false);
+        setSelectedTaskId('');
     }
-    function registClose(){
-        setRegistIsOpen(false);
+    function registOpen(){
+        setModalMode("regist");
+        setModalIsOpen(true);
     }
 
     const [tabIdx,setTabId] = useState(0);
     const handleChange = (event: React.SyntheticEvent, newValue: number) => {
         setTabId(newValue);
     };
+    
+    function updateOpen(taskId:string){
+        setSelectedTaskId(taskId);
+        setModalMode("update");
+        setModalIsOpen(true);
+    }
+
+    const [selectedTaskId, setSelectedTaskId] = useState('');
 
     return (
         <Grid container>
@@ -41,14 +57,17 @@ export default function ProjectTasks(){
                 <CardContent>
                     {
                         tabIdx === 0 ?
-                        <TaskTable type={'person'} />
+                        <TaskTable type={'project'} onClick={updateOpen} prId={prId}/>
                         :
                         <TaskGantt />
                     }
                 </CardContent>
             </Card>
 
-            <ModalTaskRegistForm isOpen={registIsOpen} onClose={registClose} />
+            { modalIsOpen?
+                <ModalTaskForm prId={prId} taskId={selectedTaskId} mode={modalMode} isOpen={modalIsOpen} onClose={modalClose} />
+                :''
+            }
 
         </Grid>
     )

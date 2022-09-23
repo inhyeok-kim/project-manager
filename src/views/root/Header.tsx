@@ -7,9 +7,20 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../../api/Auth";
 import { test } from "../../api/Test";
+import { useQuery } from "@tanstack/react-query";
+import { selectMyInfo } from "../../api/Member";
 
 export default function Header(){
     const navigate = useNavigate();
+
+    const [userInfo,setUserInfo] = useState<Member>();
+    useQuery(['/member/me'],selectMyInfo,{
+        onSuccess : data => {
+            if(data.data.code === '0'){
+                setUserInfo(data.data.data);
+            }
+        }
+    });
 
     const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
     const open = Boolean(anchorEl);
@@ -104,8 +115,8 @@ export default function Header(){
                     <Grid item xs={5}>
                         <Grid container justifyContent={'flex-end'}>
                             <Grid style={{textAlign:"right",marginRight:'10px'}}>
-                                <Typography fontSize={'0.7rem'} color={blueGrey[900]} align="right" variant="caption">동아피엠</Typography>
-                                <Typography fontWeight={600} align="right" variant="inherit">Inheyo.Kim</Typography>
+                                <Typography fontSize={'0.7rem'} color={blueGrey[900]} align="right" variant="caption">{userInfo?.belong}</Typography>
+                                <Typography fontWeight={600} align="right" variant="inherit">{userInfo?.name}</Typography>
                             </Grid>
                             <Button
                                 onClick={handleClick}

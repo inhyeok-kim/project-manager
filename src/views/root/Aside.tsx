@@ -16,10 +16,14 @@ import { getMyProjectList } from "../../api/Project";
 import { useQuery } from "@tanstack/react-query";
 
 function useAsideMenu(){
+    const navigate = useNavigate();
     const [asideMenu, setAsideMenu] = useState<AsideMenu[]>([]);
     
     const { data } = useQuery(["/project/my",'/project'], getMyProjectList,{
-        refetchInterval : 10000
+        refetchInterval : 10000,
+        onSuccess : data=>{
+            if(data.data.code === 'A1') navigate('/login');
+        }
     });
 
     useEffect(()=>{
@@ -113,6 +117,14 @@ function AsideView({
     const handleClick = () => {
         setOpen(!open);
     };
+
+    useEffect(()=>{
+        if(currentMenu.includes('project')){
+            setOpen(true);
+        } else {
+            setOpen(false);
+        }
+    },[currentMenu])
 
     return (
         <Grid container justifyContent={'center'}>

@@ -5,8 +5,12 @@ import SelectMember from "../../../components/SelectMember";
 import { registProject } from "../../../api/Project";
 import { formatDateToString } from "../../../utils/FormatUtil";
 import { useMutation, QueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
+
 
 export default function Regist(){
+    const navigate = useNavigate();
+    
     const [projectName, setProjectName] = useState('');
     const [projectDescript, setProjectDescript] = useState('');
     const [projectPrivate, setProjectPrivate] = useState(false);
@@ -19,6 +23,7 @@ export default function Regist(){
     const queryClient = new QueryClient();
     const registMutation = useMutation(registProject,{
         onSuccess : (data) => {
+            if(data.data.code === 'A1') navigate('/login');
             if(data.data.code === '0'){
                 alert('프로젝트 생성 완료');
                 fnReset();

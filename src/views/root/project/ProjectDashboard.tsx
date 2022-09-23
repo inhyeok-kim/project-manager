@@ -8,7 +8,12 @@ import WatchLaterIcon from '@mui/icons-material/WatchLater';
 import PeriodTaskChart from "../../../components/PeriodTaskChart";
 import TaskList from "../../../components/TaskList";
 
-export default function ProjectDashboard(){
+interface propType {
+    prId : string
+}
+export default function ProjectDashboard({
+    prId
+}:propType){
     return (
         <Grid container
             height="80%"

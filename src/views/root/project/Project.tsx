@@ -30,13 +30,13 @@ export default function Project(){
     function child(){
         switch (menu) {
             case "dashboard":
-                return <Dashboard/>;
+                return <Dashboard prId={params.projectId!}/>;
             case "tasks":
-                return <Tasks/>;
+                return <Tasks prId={params.projectId!}/>;
             case "schedule":
-                return <Schedule/>;
+                return <Schedule prId={params.projectId!}/>;
             case "chat":
-                return <ProjectChat/>;
+                return <ProjectChat prId={params.projectId!}/>;
             default:
                 break;
         }
