@@ -28,7 +28,7 @@ export default function TaskTable({
         startDt : formatDateToString(new Date(), 'yyyy-mm-dd',true),
         endDt : formatDateToString(new Date(new Date().setDate(new Date().getDate()+7)), 'yyyy-mm-dd',true),
     });
-    const {taskList,refetch} = useTaskList(type,searchCondition);
+    const {taskList, taskListCnt,refetch} = useTaskList(type,searchCondition);
     useEffect(()=>{
         refetch();
     },[searchCondition])
@@ -227,10 +227,7 @@ export default function TaskTable({
                         </TableRow>
                         </TableHead>
                         <TableBody>
-                        {(searchCondition.perPage > 0
-                            ? taskList.slice(searchCondition.page * searchCondition.perPage, searchCondition.page * searchCondition.perPage + searchCondition.perPage)
-                            : taskList
-                        ).map((row) => (
+                        {taskList.map((row) => (
                             <TableRow
                                 hover
                                 key={row.task}
@@ -270,7 +267,7 @@ export default function TaskTable({
                     <TablePagination
                         rowsPerPageOptions={[1, 3, 5]}
                         component="div"
-                        count={taskList.length}
+                        count={taskListCnt}
                         rowsPerPage={searchCondition.perPage}
                         page={searchCondition.page}
                         onPageChange={handleChangePage}
@@ -285,14 +282,16 @@ export default function TaskTable({
 function useTaskList(type : 'person' | 'project',search :Task){
     const navigate = useNavigate();
     const [taskList, setTaskList] = useState<Task[]>([]);
+    const [taskListCnt, setTaskListCnt] = useState<number>(0);
     const { refetch } = useQuery([type === 'project' ? "/task/project" : "/task/my",'/task'], type === 'project' ? ()=>getProjectTaskList(search) : ()=>getMyTaskList(search),{
         onSuccess : data =>{
             if(data.data.code === 'A1') navigate('/login');
             if(data){
-                setTaskList(data.data.data);
+                setTaskList(data.data.data.list);
+                setTaskListCnt(data.data.data.count.cnt);
                 
             }
         }
     });
-    return {taskList,refetch};
+    return {taskList,taskListCnt,refetch};
 }

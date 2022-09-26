@@ -7,7 +7,7 @@ export default function Schedule(){
         <Grid container>
             <Card sx={{width : '100%'}}>
                 <CardContent>
-                    <Calendar />
+                    <Calendar type="person"/>
                 </CardContent>
             </Card>
         </Grid>

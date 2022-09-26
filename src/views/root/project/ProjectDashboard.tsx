@@ -142,7 +142,7 @@ export default function ProjectDashboard({
                             <Grid item xs={6} height="100%">
                                 <Card sx={{width : '100%',height:"100%"}} >
                                     <CardContent sx={{height:"100%"}}>
-                                        <Calendar />
+                                        <Calendar type='project' prId={prId} />
                                     </CardContent>
                                 </Card>
                             </Grid>

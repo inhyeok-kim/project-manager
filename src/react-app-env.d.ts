@@ -1,5 +1,25 @@
 /// <reference types="react-scripts" />
 
+interface Schedule {
+    [index, string]
+    startTm ? : string
+    startDt ? : string
+    schTitle ? : string
+    schId ? : string
+    schDescription ? : string
+    registerId ? : string
+    registTime ? : string
+    prId ? : string
+    endTm ? : string
+    endDt ? : string
+
+    prName? : string
+    registerName? : string
+
+    page? : number
+    perPage? : number
+}
+
 interface Task {
     [index : string]
     taskId? : string

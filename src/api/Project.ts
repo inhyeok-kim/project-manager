@@ -12,3 +12,10 @@ export async function getMyProjectList(){
         withCredentials : true,
     });
 }
+
+export async function getProject(prId:string){
+    return axios.get(URL+'/project',{
+        withCredentials : true,
+        params : {prId : prId}
+    });
+}

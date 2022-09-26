@@ -12,7 +12,7 @@ export default function ProjectSchedule({
         <Grid container>
             <Card sx={{width : '100%'}}>
                 <CardContent>
-                    <Calendar />
+                    <Calendar prId={prId} type="project" />
                 </CardContent>
             </Card>
         </Grid>

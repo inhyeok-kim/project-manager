@@ -138,7 +138,7 @@ export default function Dashboard(){
                             <Grid item xs={6} height="100%">
                                 <Card sx={{width : '100%',height:"100%"}}>
                                     <CardContent sx={{height:"100%"}}>
-                                        <Calendar />
+                                        <Calendar type="person" />
                                     </CardContent>
                                 </Card>
                             </Grid>

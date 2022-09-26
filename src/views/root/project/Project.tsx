@@ -1,7 +1,9 @@
 import { Button, Grid, Stack, Typography } from "@mui/material";
 import { blueGrey } from "@mui/material/colors";
+import { useQuery } from "@tanstack/react-query";
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
+import { getProject } from "../../../api/Project";
 import ProjectChat from "./ProjectChat";
 import Dashboard from "./ProjectDashboard";
 import Schedule from "./ProjectSchedule";
@@ -27,16 +29,18 @@ export default function Project(){
         }
     }, [menu]);
 
+    const projectInfo = useQuery(['/project'+params.projectId],()=>getProject(params.projectId!));
+
     function child(){
         switch (menu) {
             case "dashboard":
-                return <Dashboard prId={params.projectId!}/>;
+                return <Dashboard key={params.projectId!} prId={params.projectId!}/>;
             case "tasks":
-                return <Tasks prId={params.projectId!}/>;
+                return <Tasks key={params.projectId!} prId={params.projectId!}/>;
             case "schedule":
-                return <Schedule prId={params.projectId!}/>;
+                return <Schedule key={params.projectId!} prId={params.projectId!}/>;
             case "chat":
-                return <ProjectChat prId={params.projectId!}/>;
+                return <ProjectChat key={params.projectId!} prId={params.projectId!}/>;
             default:
                 break;
         }
@@ -48,7 +52,7 @@ export default function Project(){
                 <Stack 
                     spacing={3} 
                     direction={'row'} >
-                    <Typography color={blueGrey[600]} fontWeight={600} variant="h5">Something Project</Typography>
+                    <Typography color={blueGrey[600]} fontWeight={600} variant="h5">{projectInfo.data?.data.data.prName}</Typography>
                     {
                         tempProjectMenu.map((m,i)=>{
                             return (

@@ -1,14 +1,28 @@
-import FullCalendar, { DateSelectArg } from "@fullcalendar/react";
+import FullCalendar, { DateSelectArg, DatesSetArg, EventClickArg, EventDropArg } from "@fullcalendar/react";
 import dayGridPlugin from "@fullcalendar/daygrid";
-import interactionPlugin from "@fullcalendar/interaction";
-import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, TextField, Typography, Select, MenuItem,FormControl} from "@mui/material";
-import React, { useState } from "react";
+import interactionPlugin, { EventResizeDoneArg } from "@fullcalendar/interaction";
+import { Button, Dialog, DialogActions, DialogContent, DialogTitle, Grid, TextField, Typography, FormControl, Switch} from "@mui/material";
+import React, { useState, useRef, useEffect } from "react";
 import { blueGrey } from "@mui/material/colors";
 import { formatDateToString } from "../utils/FormatUtil";
+import SelectProject from "./SelectProject";
+import { QueryClient, useMutation, useQuery } from "@tanstack/react-query";
+import { getMyTaskList, getProjectTaskList } from "../api/Task";
+import { deleteSchedule, getMyScheduleList, getProjectScheduleList, getSchedule, registSchedule, updateSchedule } from "../api/Schedule";
+import { useNavigate } from "react-router-dom";
 
-export default function Calendar(){
+interface propType {
+    type : 'person' | 'project',
+    prId? : string
+}
+export default function Calendar({
+    type,
+    prId = '',
+}:propType){
+    const navigate = useNavigate();
+    const calendarRef = useRef<FullCalendar>(null);
     const [selectDateRange, setSelectDateRange] = useState<Array<Date>|null>();
-    const [mouseLoc, setMouseLoc] = useState<Array<number>>();
+    const mouseLoc = useRef<Array<number>>();
     function fnSelectDate(arg : DateSelectArg){
         const mouseX = arg.jsEvent?.clientX;
         const mouseY = arg.jsEvent?.clientY;
@@ -16,35 +30,172 @@ export default function Calendar(){
         endDate.setDate(endDate.getDate()-1);
         const newDateRange = [arg.start, endDate];
         setSelectDateRange(newDateRange);
-        setMouseLoc([mouseX!,mouseY!]);
+        mouseLoc.current = [mouseX!,mouseY!];
+    }
+    let searchTask = useRef({});
+    useEffect(()=>{
+        handleDateRange(new Date());
+    },[]);
+
+    function handleDateRange(e:Date){
+        e.setMonth(e.getMonth()-1);
+        const startDt = formatDateToString(e,'yyyy-mm-dd',true);
+        e.setMonth(e.getMonth()+3);
+        e.setDate(e.getDate()-1);
+        const endDt = formatDateToString(e,'yyyy-mm-dd',true);
+        searchTask.current = {
+            prId:prId,
+            startDt:startDt,
+            endDt:endDt
+        };
+        taskQuery.refetch();
+        scheduleQuery.refetch();
+    }
+    
+    const taskQuery = useQuery([type === 'project' ? "/task/project" : "/task/my",'/task'], type === 'project' ? ()=>getProjectTaskList(searchTask.current) : ()=>getMyTaskList(searchTask.current),{
+        onSuccess : data=>{
+            const result = data.data;
+            if(result.code === '0'){
+                const _events = result.data.list.map((task : Task)=>{
+                    return {
+                        title : task.taskTitle,
+                        start : task.startDt,
+                        end : task.endDt === task.startDt ? task.endDt : new Date(task.endDt!).setDate(new Date(task.endDt!).getDate()+1),
+                        allDay : true,
+                        editable : false,
+                        backgroundColor:'orange',
+                        borderColor:'orange'
+                    }
+                });
+                setTaskEvents(_events);
+            }  
+        },
+        refetchInterval : false,
+    });
+    const scheduleQuery = useQuery([type === 'project' ? "/schedule/project" : "/schedule/my",'/schedule'], type === 'project' ? ()=>getProjectScheduleList(searchTask.current) : ()=>getMyScheduleList(searchTask.current),{
+        onSuccess : data=>{
+            const result = data.data;
+            if(result.code === '0'){
+                const _events = result.data.list.map((schedule : Schedule)=>{
+                    return {
+                        id : schedule.schId,
+                        title : schedule.schTitle,
+                        start : schedule.startDt + (schedule.startTm ? 'T'+schedule.startTm+':00':''),
+                        end : schedule.startTm ? schedule.endDt + (schedule.endTm ? 'T'+schedule.endTm+':00':'') :(schedule.endDt === schedule.startDt ? schedule.endDt : formatDateToString(new Date(new Date(schedule.endDt!).setDate(new Date(schedule.endDt!).getDate()+1)),'yyyy-mm-dd',true)),
+                        editable : true,
+                        allDay : schedule.startTm ? false : true,
+                    }
+                });
+                setScheduleEvents(_events);
+            }  
+        },
+        refetchInterval : false
+    });
+    const [taskEvents, setTaskEvents] = useState([]);
+    const [scheduleEvents, setScheduleEvents] = useState([]);
+
+
+    const [selectedSchId, setSelectedSchId] = useState('');
+    const [updateIsOpen, setRegistIsOpen] = useState(false);
+    function updateOpen(){
+        setRegistIsOpen(true);
+    }
+    function modalClose(){
+        setRegistIsOpen(false);
+    }
+    function fnUpdateForm(e:EventClickArg){
+        if(scheduleEvents.find((v:any)=>e.event.id === v.id)){
+            setSelectedSchId(e.event.id);
+            updateOpen();
+        }
+    }
+
+    const saveMutation = useMutation(updateSchedule,{
+        onSuccess : (data) => {
+            if(data.data.code === 'A1') navigate('/login');
+            if(data.data.code === '0'){
+                scheduleQuery.refetch();
+            }
+        }
+    });
+
+    function fnDragDrop(e:EventDropArg){
+        const id = e.event.id;
+        const origin = scheduleQuery.data!.data.data.list.find((v:Schedule)=>{
+            return v.schId === id;
+        });
+        if(origin){
+            const newSch : Schedule = {...origin as Schedule};
+            newSch.startDt = formatDateToString(e.event.start!,'yyyy-mm-dd',true);
+            newSch.endDt = e.event.end ? formatDateToString(new Date(new Date(e.event.end!).setDate(e.event.end!.getDate()-1))!,'yyyy-mm-dd',true) : formatDateToString(e.event.start!,'yyyy-mm-dd',true);
+            saveMutation.mutate(newSch);
+        }  
+    }
+    function fnResize(e:EventResizeDoneArg){
+        const id = e.event.id;
+        const origin = scheduleQuery.data!.data.data.list.find((v:Schedule)=>{
+            return v.schId === id;
+        });
+        if(origin){
+            const newSch : Schedule = {...origin as Schedule};
+            newSch.startDt = formatDateToString(e.event.start!,'yyyy-mm-dd',true);
+            newSch.endDt = e.event.end ? formatDateToString(new Date(new Date(e.event.end!).setDate(e.event.end!.getDate()-1))!,'yyyy-mm-dd',true) : formatDateToString(e.event.start!,'yyyy-mm-dd',true);
+            saveMutation.mutate(newSch);
+        }  
     }
 
     return (
         <>
             <FullCalendar
+                ref={calendarRef}
                 plugins={[dayGridPlugin, interactionPlugin]}
                 // dateClick={(arg)=>{console.log(arg)}}
                 initialView="dayGridMonth"
                 headerToolbar ={{
-                    center: 'dayGridMonth,dayGridWeek',
+                    right : 'today customprev,customnext'
+                }}
+                dayMaxEventRows={true}
+                customButtons={{
+                    customprev : {
+                        icon : 'chevron-left',
+                        click : function(){
+                            if(calendarRef.current){
+                                calendarRef.current.getApi().prev();
+                                handleDateRange(calendarRef.current.getApi().getDate());
+                            }
+                        }
+                    },
+                    customnext : {
+                        icon : 'chevron-right',
+                        click : function(){
+                            if(calendarRef.current){
+                                calendarRef.current.getApi().next();
+                                handleDateRange(calendarRef.current.getApi().getDate());
+                            }
+                        }
+                    },
                 }}
                 unselectCancel = {'.unselectCancel, #menu-'}
                 selectable={true}
                 editable={true}
+                eventClick={fnUpdateForm}
                 select={(arg)=>{fnSelectDate(arg)}}
                 unselect={()=>{setSelectDateRange(null)}}
+                eventDrop={fnDragDrop}
+                eventResize={fnResize}
                 // eventContent={eventContent}
-                events={[
-                    {title : 'task 1', start : '2022-08-01T15:30:00',end : '2022-08-01T18:30:00', editable : true,backgroundColor:'orange',borderColor:'orange'},
-                    {title : 'event 1', start : '2022-08-01T15:30:00',end : '2022-08-01T18:30:00', editable : true},
-                    {title : 'task 2', start : '2022-08-09T15:30:00',end : '2022-08-11T18:30:00', editable : true,backgroundColor:'orange',borderColor:'orange'},
-                    {title : 'event 2', start : '2022-08-07T15:30:00',end : '2022-08-10T18:30:00', editable : true},
-                ]}
-                eventMouseEnter={mouseEnter}
+                events={scheduleEvents.concat(taskEvents)}
+                // eventMouseEnter={mouseEnter}
             />
             {
                 selectDateRange ? 
-                    <CalTooltip mouseLoc={mouseLoc!} dateRange={selectDateRange} />
+                    <CalTooltip mouseLoc={mouseLoc.current!} dateRange={selectDateRange} />
+                :
+                    ''
+            }
+            {
+                updateIsOpen ? 
+                    <ModalRegistForm schId={selectedSchId} mode={'update'} isOpen={updateIsOpen} onClose={modalClose} />
                 :
                     ''
             }
@@ -79,7 +230,7 @@ function CalTooltip({
     function registOpen(){
         setRegistIsOpen(true);
     }
-    function registClose(){
+    function modalClose(){
         setRegistIsOpen(false);
     }
     function fnRegistForm(e:React.MouseEvent){
@@ -94,7 +245,7 @@ function CalTooltip({
             </Grid>
             {
                 registIsOpen ? 
-                    <ModalRegistForm dateRange={dateRange} isOpen={registIsOpen} onClose={registClose} />
+                    <ModalRegistForm mode={'regist'} dateRange={dateRange} isOpen={registIsOpen} onClose={modalClose} />
                 :
                     ''
             }
@@ -105,26 +256,31 @@ function CalTooltip({
 interface ModalRegistFormPropType {
     isOpen : boolean
     onClose : Function
-    dateRange : Array<Date> | null
+    dateRange? : Array<Date> | null
+    mode : 'regist'|'update'
+    schId? : string
 }
 function ModalRegistForm({
     isOpen,
     onClose,
-    dateRange
+    dateRange,
+    mode = 'regist',
+    schId = ''
 }:ModalRegistFormPropType){
-
-    function registClose(){
+    const navigate = useNavigate();
+    function modalClose(){
         onClose();
     }
     const [title, setTitle] = useState('');
     const [desc, setDesc] = useState('');
+    const [project, setProject] = useState('');
 
-    const [startDate, setStartDate] = useState(formatDateToString(dateRange![0],"yyyy-mm-dd",true));
-    const [endDate, setEndDate] = useState(formatDateToString(dateRange![1],"yyyy-mm-dd",true));
+    const [startDate, setStartDate] = useState(dateRange?formatDateToString(dateRange![0],"yyyy-mm-dd",true):'');
+    const [endDate, setEndDate] = useState(dateRange?formatDateToString(dateRange![1],"yyyy-mm-dd",true):'');
 
-    
-    const [startTime, setStartTime] = useState(formatDateToString(dateRange![0],"HH:MM",true));
-    const [endTime, setEndTime] = useState(formatDateToString(dateRange![1],"HH:MM",true));
+    const [allDay, setAllDay] = useState(false);
+    const [startTime, setStartTime] = useState(dateRange?formatDateToString(new Date(),"HH:MM",true):'');
+    const [endTime, setEndTime] = useState(dateRange?formatDateToString(new Date(),"HH:MM",true):'');
     
     function fnSetDate(type:'start'|'end', value : string){
         switch (type) {
@@ -171,21 +327,68 @@ function ModalRegistForm({
         }
     }
 
+    useQuery([`/schedule/`+schId],()=>getSchedule({schId:schId}),{
+        onSuccess : (data)=>{
+            if(data.data.code === "0"){
+                if(data.data.data.schId){
+                    const schedule : Schedule = data.data.data;
+                    setTitle(schedule.schTitle!);
+                    setProject(schedule.prId!);
+                    setDesc(schedule.schDescription!);
+                    setStartDate(schedule.startDt!);
+                    setEndDate(schedule.endDt!);
+                    setStartTime(schedule.startTm!);
+                    setEndTime(schedule.endTm!);
+                    setAllDay(schedule.startTm ? false : true);
+                }
+            }
+        }
+    });
+
+    const queryClient = new QueryClient();
+    const deleteMutation = useMutation(deleteSchedule,{
+        onSuccess : (data) => {
+            if(data.data.code === 'A1') navigate('/login');
+            if(data.data.code === '0'){
+                alert( 'Schedule delete successful');
+                queryClient.invalidateQueries(['/schedule']);
+                modalClose();
+            }
+        }
+    });
+
+    const saveMutation = useMutation(mode === 'regist' ? registSchedule : updateSchedule,{
+        onSuccess : (data) => {
+            if(data.data.code === 'A1') navigate('/login');
+            if(data.data.code === '0'){
+                alert( mode === 'regist' ? 'New Schedule registration ' : 'The Schedule update ' + 'successful');
+                queryClient.invalidateQueries(['/schedule']);
+                modalClose();
+            }
+        }
+    });
+    function fnDelete(){
+        deleteMutation.mutate(schId);
+    }
+
     function fnRegist(){
-        const _startDate = new Date(startDate +' '+ startTime);
-        const _endDate = new Date(endDate +' '+ endTime);
-        console.log({
-            start : _startDate,
-            end : _endDate,
-            title : title,
-            desc : desc
-        });
+        const newSch : Schedule = {
+            schId : schId,
+            prId : project,
+            schTitle : title,
+            schDescription : desc,
+            startDt : startDate,
+            startTm : allDay ? '' : startTime,
+            endDt : endDate,
+            endTm : allDay ? '' : endTime,
+        }
+        saveMutation.mutate(newSch);
     }
 
     return (
 
-            <Dialog className="unselectCancel" open={isOpen} onClose={registClose} fullWidth>
-                <DialogTitle>New Schedule</DialogTitle>
+            <Dialog className="unselectCancel" open={isOpen} onClose={modalClose} fullWidth>
+                <DialogTitle>{ mode === 'regist' ? 'New Schedule' : 'Schedule'}</DialogTitle>
                 <DialogContent >
                     <Grid item xs={12} sx={{marginTop : '2%'}}>
                         <Typography color={blueGrey[800]} paddingLeft={'1%'} variant="subtitle2">Schedule Title</Typography>
@@ -203,20 +406,11 @@ function ModalRegistForm({
                     <Grid item xs={12} sx={{marginTop : '2%'}}>
                         <Typography color={blueGrey[800]} paddingLeft={'1%'} variant="subtitle2">Project</Typography>
                         <FormControl >
-                            {/* <InputLabel id="demo-simple-select-label">Age</InputLabel> */}
-                            <Select
-                                labelId="demo-simple-select-label"
-                                id="demo-simple-select"
-                                className="unselectCancel"
-                                value={'1'}
-                                sx={{minWidth:'120px'}}
-                                // onChange={handleChange}
-                                >
-                                <MenuItem value='1'>Select Project</MenuItem>
-                                <MenuItem className="unselectCancel" value={10}>Ten</MenuItem>
-                                <MenuItem className="unselectCancel" value={20}>Twenty</MenuItem>
-                                <MenuItem className="unselectCancel" value={30}>Thirty</MenuItem>
-                            </Select>
+                            <SelectProject 
+                                value={project}
+                                onChange={setProject}
+
+                            />
                         </FormControl>
                     </Grid>
                     <Grid item xs={12} sx={{marginTop : '2%'}}>
@@ -227,20 +421,41 @@ function ModalRegistForm({
                         <Grid item xs={6}>
                             <Typography color={blueGrey[800]} paddingLeft={'1%'} variant="subtitle2">Start Date</Typography>
                             <TextField fullWidth type={"date"} onChange={(e)=>fnSetDate('start',e.target.value)} value={startDate} />
-                            <Typography color={blueGrey[800]} marginTop={'1%'} paddingLeft={'1%'} variant="subtitle2">Start Time</Typography>
-                            <TextField fullWidth type={"time"} onChange={(e)=>fnSetTime('start',e.target.value)} value={startTime} />
                         </Grid>
                         <Grid item xs={6}>
                             <Typography color={blueGrey[800]} paddingLeft={'1%'} variant="subtitle2">End Date</Typography>
                             <TextField fullWidth type={"date"} onChange={(e)=>fnSetDate('end',e.target.value)} value={endDate}/>
-                            <Typography color={blueGrey[800]} marginTop={'1%'} paddingLeft={'1%'} variant="subtitle2">End Time</Typography>
-                            <TextField fullWidth type={"time"} onChange={(e)=>fnSetTime('end',e.target.value)} value={endTime} />
                         </Grid>
                     </Grid>
+                    <Grid container columnSpacing={3} sx={{marginTop : '2%'}}>
+                        <Grid item xs={6}>
+                            <Typography color={blueGrey[800]} marginTop={'1%'} paddingLeft={'1%'} variant="subtitle2">All Day</Typography>
+                            <Switch checked={allDay} onChange={(e)=>setAllDay(e.target.checked)} />
+                        </Grid>
+                    </Grid>
+                    {
+                        allDay ?
+                        ''
+                        :
+                        <Grid container columnSpacing={3} sx={{marginTop : '2%'}}>
+                            <Grid item xs={6}>
+                                <Typography color={blueGrey[800]} marginTop={'1%'} paddingLeft={'1%'} variant="subtitle2">Start Time</Typography>
+                                <TextField fullWidth type={"time"} onChange={(e)=>fnSetTime('start',e.target.value)} value={startTime} />
+                            </Grid>
+                            <Grid item xs={6}>
+                                <Typography color={blueGrey[800]} marginTop={'1%'} paddingLeft={'1%'} variant="subtitle2">End Time</Typography>
+                                <TextField fullWidth type={"time"} onChange={(e)=>fnSetTime('end',e.target.value)} value={endTime} />
+                            </Grid>
+                        </Grid>
+                    }
 
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={registClose}>Cancel</Button>
+                    {mode === 'update' ? 
+                        <Button onClick={fnDelete} color={"error"}>Delete</Button> 
+                        : 
+                        <Button onClick={modalClose}>Cancel</Button>
+                    }
                     <Button onClick={fnRegist}>Save</Button>
                 </DialogActions>
             </Dialog>
