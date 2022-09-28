@@ -2,15 +2,10 @@ import axios from "axios";
 import { URL } from "./config";
 
 export async function searchMemberList(search:Member){
-    const params = new URLSearchParams();
-    Object.keys(search).forEach(key=>{
-        params.append(key,search[key])
-    });
-    const list = await axios.get(URL+'/member/search',{
+    return axios.get(URL+'/member/search',{
         withCredentials : true,
-        params : params
+        params : search
     });
-    return list.data.data;
 }
 
 export async function selectMyInfo(){

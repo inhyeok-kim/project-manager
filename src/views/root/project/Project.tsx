@@ -48,7 +48,7 @@ export default function Project(){
 
     return (
         <Grid ref={refContent} container columnSpacing={3}>
-            <Grid item xs={10} sx={{position:'fixed',paddingBottom:'1%',width:'100%', zIndex:'2',backgroundColor:'#f1f3f7'}}>
+            <Grid item xs={10} sx={{position:'absolute',paddingBottom:'1%',width:'100%', zIndex:'2',backgroundColor:'#f1f3f7'}}>
                 <Stack 
                     spacing={3} 
                     direction={'row'} >
@@ -67,7 +67,7 @@ export default function Project(){
                     }
                 </Stack>
             </Grid>
-            <Grid item xs={12} sx={{marginTop : '4%'}}>
+            <Grid item xs={12} sx={{marginTop : '4%',height:'fit-content'}}>
                 {child()}
             </Grid>
         </Grid>

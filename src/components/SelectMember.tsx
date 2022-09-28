@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import ClearIcon from '@mui/icons-material/Clear';
 import CloseIcon from '@mui/icons-material/Close';
 import { searchMemberList as search } from "../api/Member";
+import { useQuery } from "@tanstack/react-query";
 
 interface propType {
     value : Member[]
@@ -22,18 +23,23 @@ export default function SelectMember({
         onChange(newList);
     }
 
-    const [searchMemberList, setSearchMemberList] = useState(members);
+    const [searchMemberList, setSearchMemberList] = useState<Array<Member>>([]);
     const [searchName, setSearchName] = useState('');
     
     const [open, setOpen] = useState(false);
-    useEffect( ()=>{
-        getSearchMemberList(searchName);
-    },[open,searchName]);
 
-    async function getSearchMemberList(name:string){
-        const list = await search({name:name} as Member);
-        setSearchMemberList(list as Array<Member>);
-    }
+    const { refetch } = useQuery(['/member','/member/search'],()=>search({name:searchName}),{
+        onSuccess(data) {
+            if(data){
+                if(data.data.code === '0'){
+                    setSearchMemberList(data.data.data);
+                }
+            }
+        },
+    })
+    useEffect(()=>{
+        refetch();
+    },[searchName])
 
     function openDialog(){
         setOpen(true);
@@ -158,45 +164,108 @@ export default function SelectMember({
     )
 }
 
-const members : Array<Member> = [
-    {
-        memId : 'member01',
-        name : 'Oliver Hansen',
-    },
-    {
-        memId : 'member02'  ,
-        name : 'Van Henry',
-    },
-    {
-        memId : 'member03' , 
-        name : 'April Tucker',
-    },
-    {
-        memId : 'member04'  ,
-        name : 'Ralph Hubbard',
-    },
-    {
-        memId : 'member05',  
-        name : 'Omar Alexander',
-    },
-    {
-        memId : 'member06'  ,
-        name : 'Carlos Abbott',
-    },
-    {
-        memId : 'member07'  ,
-        name : 'Miriam Wagner',
-    },
-    {
-        memId : 'member08'  ,
-        name : 'Bradley Wilkerson',
-    },
-    {
-        memId : 'member09'  ,
-        name : 'Virginia Andrews',
-    },
-    {
-        memId : 'member10'  ,
-        name : 'Kelly Snyder',
-    },
-];
+interface modalProp{
+    open : boolean
+    closeDialog : Function,
+    value? : Member[],
+    choiceMember : Function
+}
+export function SearchMemberModal({
+    open,
+    closeDialog,
+    value= [],
+    choiceMember
+}:modalProp){
+
+    const [searchMemberList, setSearchMemberList] = useState<Array<Member>>([]);
+    const [searchName, setSearchName] = useState('');
+    
+    const { refetch } = useQuery(['/member','/member/search'],()=>search({name:searchName}),{
+        onSuccess(data) {
+            if(data){
+                if(data.data.code === '0'){
+                    setSearchMemberList(data.data.data);
+                }
+            }
+        },
+    })
+
+    useEffect(()=>{
+        refetch();
+    },[searchName])
+
+
+    return (
+        <Dialog fullWidth onClose={()=>closeDialog()} open={open} >
+            <DialogTitle sx={{display:'flex',justifyContent:'space-between'}}>
+                Select Project Member
+                <IconButton
+                    edge="start"
+                    color="inherit"
+                    onClick={()=>closeDialog()}
+                    aria-label="close"
+                    >
+                    <CloseIcon />
+                </IconButton>
+            </DialogTitle>
+            <Grid container justifyContent={'center'} marginBottom="20px">
+                <Grid item xs={11}>
+                    <TextField fullWidth value={searchName}
+                        label="Search Name" variant="standard"
+                        onChange={(e)=>{setSearchName(e.target.value)}}
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                    <IconButton
+                                        onClick={()=>{setSearchName('')}}
+                                    >
+                                        <ClearIcon/>
+                                    </IconButton>
+                                </InputAdornment>
+                            ),
+                            }}
+                        />
+                </Grid>
+            </Grid>
+            <List sx={{ pt: 0, height:'538px', overflowY:'auto'}} >
+                { value && value.length > 0 ? 
+                    value.map((member) => {
+                        return (
+                            <ListItem key={member.memId} button selected={true}
+                                onClick={()=>{choiceMember(member)}}
+                            >
+                                <ListItemAvatar>
+                                    <Avatar></Avatar>
+                                </ListItemAvatar>
+                                <ListItemText primary={member.name} />
+                                <ListItemText primary={'/'} />
+                                <ListItemText primary={member.job} />
+                                <ListItemText primary={'/'} />
+                                <ListItemText primary={member.belong} />
+                            </ListItem>
+                        )
+                    })
+                    :''
+                }
+                {searchMemberList.map((member) => {
+                    if(!value.find(mem=>member.memId === mem.memId)){
+                        return (
+                            <ListItem key={member.memId} button
+                            onClick={()=>{choiceMember(member)}}
+                            >
+                                <ListItemAvatar>
+                                    <Avatar></Avatar>
+                                </ListItemAvatar>
+                                <ListItemText primary={member.name} />
+                                <ListItemText primary={'/'} />
+                                <ListItemText primary={member.job} />
+                                <ListItemText primary={'/'} />
+                                <ListItemText primary={member.belong} />
+                            </ListItem>
+                        )
+                    }
+                })}
+            </List>
+        </Dialog>
+    )
+}

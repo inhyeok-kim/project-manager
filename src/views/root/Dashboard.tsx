@@ -111,7 +111,7 @@ export default function Dashboard(){
                     </Grid>
                     <Grid item xs={12} height="87%" marginTop={'2%'}>
                         <Grid 
-                            height="90%"
+                            height="95%"
                             container
                             columnSpacing={3}
                         >

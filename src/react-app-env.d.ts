@@ -1,5 +1,41 @@
 /// <reference types="react-scripts" />
 
+interface SocketData {
+    code : 'access' | 'chat' | 'error'
+    body : any
+}
+
+interface Chat {
+    [index, string]
+    chId? : string
+    chContent? : string
+    chrId? : string
+    registerId? : string
+    registTime? : string
+    isThread? : string
+    upperCh? : string
+    registerName? : string
+
+    startDate? : Date
+    endDate? : Date
+    page? : number
+    perPage? : number
+}
+interface ChatRoom {
+    [index, string]
+    chrId? : string
+    prId? : string
+    isDirect? : string
+
+    membersId? : string[]
+    membersName? : string[]
+    memId? : string
+    name? : string
+    
+    page? : number
+    perPage? : number
+}
+
 interface Schedule {
     [index, string]
     startTm ? : string

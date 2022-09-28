@@ -16,12 +16,13 @@ export default function ProjectDashboard({
 }:propType){
     return (
         <Grid container
-            height="80%"
+            height="79vh"
+            sx={{minHeight:'540px'}}
             justifyContent={"center"}
             >
             <Grid height="100%" item xs={12}>
                 <Grid height="100%" container>
-                    <Grid item xs={12} height="13%">
+                    <Grid item xs={12} height="13%" minHeight={'84px'}>
                         <Grid 
                             container
                             height="100%"
@@ -115,7 +116,7 @@ export default function ProjectDashboard({
                     </Grid>
                     <Grid item xs={12} height="87%" marginTop={'2%'}>
                         <Grid 
-                            height="90%"
+                            height="95%"
                             container
                             columnSpacing={3}
                         >
